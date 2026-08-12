@@ -1,0 +1,56 @@
+{
+  "experiment_name": "e3_burst_stress",
+  "modes": [
+    "hpgp_csma_ca_like",
+    "fixed_reservation",
+    "adaptive_transition_aware"
+  ],
+  "initial_N_values": [
+    10,
+    20,
+    30
+  ],
+  "slac_burst_sizes": [
+    0,
+    5,
+    10,
+    15,
+    20,
+    25
+  ],
+  "burst_time_s": 1,
+  "simulation_time_s": 10,
+  "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30
+  ],
+  "heterogeneous_plc_enabled": false
+}

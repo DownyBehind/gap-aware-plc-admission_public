@@ -1,0 +1,32 @@
+{
+  "experiment_name": "e6b_dynamic_quantitative",
+  "simulation_time_s": 300,
+  "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20
+  ],
+  "modes": [
+    "hpgp_csma_ca_like",
+    "fixed_reservation",
+    "adaptive_transition_aware"
+  ],
+  "heterogeneous_plc_enabled": false
+}

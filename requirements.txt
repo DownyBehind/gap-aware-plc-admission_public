@@ -1,0 +1,7 @@
+# Verified environment: Python 3.12.3, FreeType 2.13.2 (system).
+# Install via tools/setup_python_env.sh — matplotlib must be built against
+# the system FreeType (--no-binary below); the wheel's bundled FreeType
+# 2.6.1 shifts text metrics and fails tools/check_figures.sh.
+--no-binary matplotlib
+numpy==1.26.4
+matplotlib==3.6.3

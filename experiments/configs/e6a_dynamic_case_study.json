@@ -1,0 +1,11 @@
+{
+  "experiment_name": "e6a_dynamic_case_study",
+  "simulation_time_s": 60,
+  "seeds": [
+    1
+  ],
+  "mode": "adaptive_transition_aware",
+  "arrival_pattern": "depot_burst",
+  "departure_model": "none",
+  "heterogeneous_plc_enabled": false
+}

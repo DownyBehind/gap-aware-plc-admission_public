@@ -1,0 +1,55 @@
+{
+  "profile_discovery_modes": [
+    "known_before_slac",
+    "estimated_after_slac",
+    "worst_case_until_slac"
+  ],
+  "topologies": [
+    "mixed",
+    "far_heavy"
+  ],
+  "N0": [
+    10,
+    20,
+    30
+  ],
+  "slac_burst_size": [
+    5,
+    10,
+    15,
+    20
+  ],
+  "simulation_time_s": 10,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29
+  ]
+}

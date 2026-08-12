@@ -1,0 +1,26 @@
+{
+  "N": [
+    20,
+    25,
+    30,
+    35
+  ],
+  "K": [
+    0,
+    1,
+    5,
+    10
+  ],
+  "topologies": [
+    "near_only",
+    "mixed",
+    "far_heavy",
+    "severe_heavy"
+  ],
+  "admission_modes": [
+    "count_based_nominal",
+    "count_based_worst_case",
+    "link_aware_demand_based"
+  ],
+  "plc_error_mode": "bounded"
+}

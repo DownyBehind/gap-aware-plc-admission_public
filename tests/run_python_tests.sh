@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+python3 -m py_compile "$ROOT"/experiments/analysis/*.py "$ROOT"/tools/*.py "$ROOT"/src/formulas/*.py
+python3 "$ROOT/tools/check_project_structure.py"
+python3 "$ROOT/tests/test_transition_formulas.py"
+python3 "$ROOT/tests/test_grant_map_formula_match.py"
+python3 "$ROOT/tests/test_requests_first_justification.py"
+python3 "$ROOT/tests/test_regime_classification.py"
+python3 "$ROOT/tests/test_slack_degradation.py"
+python3 "$ROOT/tests/test_slac_completion_bound.py"
+python3 "$ROOT/tests/test_fixed_reservation_baseline.py"
+python3 "$ROOT/tests/test_plc_degradation_multiplier.py"
+python3 "$ROOT/tests/test_link_aware_extension.py"
+python3 "$ROOT/tests/test_current_vs_candidate_semantics.py"
+python3 "$ROOT/tests/test_G_zero_policy.py"
+python3 "$ROOT/tests/test_grant_map_phase_non_overlap.py"
+python3 "$ROOT/tests/test_slot_machine_parity.py"
+python3 "$ROOT/tests/test_overhead_physics.py"
+python3 "$ROOT/tests/test_ns3_final_smoke.py"

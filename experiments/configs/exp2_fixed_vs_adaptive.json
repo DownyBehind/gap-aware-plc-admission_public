@@ -1,0 +1,66 @@
+{
+  "t_ctrl_ms": 50.0,
+  "slot_duration_us": 35.84,
+  "t_ctrl_slots": 1395,
+  "o_map_slots": 0,
+  "c_req_eff_slots": 15,
+  "c_res_eff_slots": 21,
+  "c_proc_slots": 280,
+  "b_auth_slots": 7,
+  "b_pkt_slots": 21,
+  "b_blk_slots": 21,
+  "c_slac_slots": 247,
+  "d_slac_ms": 2000.0,
+  "initial_dc_evs": 12,
+  "active_slac_sessions": 2,
+  "periods": 40,
+  "experiment": "exp2_fixed_vs_adaptive",
+  "modes": [
+    "fixed_reservation",
+    "adaptive_transition_aware"
+  ],
+  "fixed_auth_slots": 32,
+  "experiment_name": "exp2_fixed_vs_adaptive",
+  "B_fix_values": [
+    8,
+    16,
+    32,
+    64,
+    128,
+    256,
+    512
+  ],
+  "N_values": [
+    0,
+    5,
+    15,
+    30
+  ],
+  "K_values": [
+    0,
+    1,
+    5,
+    10,
+    20
+  ],
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "metrics": [
+    "idle_waste",
+    "slac_timeout_ratio",
+    "dc_deadline_miss_ratio",
+    "channel_occupancy",
+    "admitted_sessions",
+    "completed_slac_sessions"
+  ],
+  "fixed_alpha_values": [
+    0.05,
+    0.1,
+    0.2,
+    0.3
+  ],
+  "heterogeneous_plc_enabled": false
+}

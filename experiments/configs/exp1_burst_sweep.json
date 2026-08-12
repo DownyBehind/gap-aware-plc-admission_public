@@ -1,0 +1,37 @@
+{
+  "experiment_name": "exp1_burst_sweep",
+  "modes": [
+    "hpgp_csma_ca_like",
+    "adaptive_transition_aware"
+  ],
+  "initial_N_values": [
+    10,
+    20,
+    30
+  ],
+  "slac_burst_sizes": [
+    0,
+    5,
+    10,
+    15,
+    20,
+    25
+  ],
+  "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "metrics": [
+    "dc_deadline_miss_ratio",
+    "p95_dc_response_latency_slots",
+    "p99_dc_response_latency_slots",
+    "collision_count",
+    "retry_count",
+    "admitted_count",
+    "rejected_count"
+  ],
+  "heterogeneous_plc_enabled": false
+}

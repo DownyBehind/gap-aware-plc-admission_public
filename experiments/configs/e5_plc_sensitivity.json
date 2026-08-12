@@ -1,0 +1,72 @@
+{
+  "experiment_name": "exp5_plc_degradation_sensitivity",
+  "profiles": [
+    {
+      "name": "good",
+      "C_req_eff": 12,
+      "C_res_eff": 18,
+      "B_blk": 21,
+      "B_pkt": 21,
+      "O_map": 14
+    },
+    {
+      "name": "nominal",
+      "C_req_eff": 15,
+      "C_res_eff": 21,
+      "B_blk": 21,
+      "B_pkt": 21,
+      "O_map": 14
+    },
+    {
+      "name": "degraded",
+      "C_req_eff": 20,
+      "C_res_eff": 30,
+      "B_blk": 42,
+      "B_pkt": 21,
+      "O_map": 28
+    },
+    {
+      "name": "severe",
+      "C_req_eff": 25,
+      "C_res_eff": 40,
+      "B_blk": 42,
+      "B_pkt": 42,
+      "O_map": 56
+    }
+  ],
+  "N_values": [
+    0,
+    5,
+    10,
+    15,
+    20,
+    25,
+    30,
+    35,
+    40
+  ],
+  "K_values": [
+    0,
+    1,
+    5,
+    10,
+    15,
+    20,
+    25,
+    30
+  ],
+  "b_auth_values": [
+    8
+  ],
+  "metrics": [
+    "admissible_count",
+    "hidden_count",
+    "paid_count",
+    "rejected_count",
+    "max_admissible_N",
+    "mean_dc_slack_slots",
+    "rejection_ratio",
+    "formula_sim_mismatches"
+  ],
+  "heterogeneous_plc_enabled": false
+}

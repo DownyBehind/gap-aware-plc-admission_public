@@ -1,0 +1,10 @@
+per,variant,q,retry_cap,admitted_sessions,dg_violations,dg_violation_rate,cap_failures,rejection_rate_plane,dc_miss_rate
+0.001,A_loss_blind,7,0,1440,0,0.0,0,0.2625,0.0
+0.001,B_q_exp,7,0,1440,0,0.0,0,0.2625,0.0
+0.001,C_q_wc,19,2,1440,0,0.0,0,0.2625,0.0
+0.01,A_loss_blind,7,0,1440,3,0.00208333,0,0.2625,0.0
+0.01,B_q_exp,7,0,1440,3,0.00208333,0,0.2625,0.0
+0.01,C_q_wc,25,3,1440,0,0.0,0,0.2641,4.63e-05
+0.03,A_diagnostic,7,0,1440,28,0.01944444,0,0.2625,
+0.05,A_diagnostic,7,0,1440,86,0.05972222,0,0.2625,
+0.1,A_diagnostic,7,0,1440,280,0.19444444,0,0.2625,

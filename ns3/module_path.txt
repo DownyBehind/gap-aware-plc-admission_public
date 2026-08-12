@@ -1,0 +1,11 @@
+# ns-3 build locations. Values are shell-source-safe; consumers
+# (tests/run_cpp_tests.sh, tools/sync_ns3_module.sh) set $ROOT to the
+# repository root before sourcing this file, so paths are expressed via
+# $ROOT. The ns-3 checkout is expected as a sibling of the repository
+# (see tools/setup_ns3.sh, which clones it, pins the commit, and symlinks
+# the contrib module).
+NS3_ROOT="$ROOT/../ns-3-dev"
+NS3_MODULE="$ROOT/../ns-3-dev/contrib/ev-plc-transition"
+BUILD_SYSTEM="cmake/ns3-wrapper (track B) + standalone/g++ (option A dev loop)"
+STANDALONE_BUILD="$ROOT/ns3/standalone/build.sh"
+NS3_MODULE_SOURCE="$ROOT/ns3/contrib/ev-plc-transition"

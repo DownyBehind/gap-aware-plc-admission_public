@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+ns3/standalone/build/*
+!ns3/standalone/build/.gitkeep
+ns3/standalone/include/ns3/*.h
+!ns3/standalone/include/ns3/core-module.h
+!ns3/standalone/include/ns3/nstime.h
+!ns3/standalone/include/ns3/test.h
+.venv/
+.omc/
+scratch/
+figures/out/

@@ -1,0 +1,5 @@
+build/
+include/ns3/*
+!include/ns3/nstime.h
+!include/ns3/test.h
+!include/ns3/core-module.h

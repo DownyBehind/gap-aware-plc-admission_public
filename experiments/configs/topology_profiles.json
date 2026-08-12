@@ -1,0 +1,30 @@
+{
+  "topologies": [
+    {
+      "name": "small_site",
+      "ports": [
+        {
+          "port_id": 0,
+          "cable_length_m": 5,
+          "branch_depth": 0
+        },
+        {
+          "port_id": 1,
+          "cable_length_m": 8,
+          "branch_depth": 0
+        },
+        {
+          "port_id": 2,
+          "cable_length_m": 12,
+          "branch_depth": 1
+        }
+      ]
+    },
+    {
+      "name": "depot_site",
+      "num_ports": 40,
+      "cable_length_distribution": "mixed_5_80m",
+      "branch_depth_distribution": "0_3"
+    }
+  ]
+}

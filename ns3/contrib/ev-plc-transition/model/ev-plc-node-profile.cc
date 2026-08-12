@@ -1,0 +1,2 @@
+#include "ev-plc-node-profile.h"
+namespace ns3 { EvCommunicationDemand MakeDemand(uint32_t evId,uint32_t portId,const PlcLinkProfile& p,uint32_t cProcSlots){ EvCommunicationDemand d; d.evId=evId; d.portId=portId; d.profileClass=p.profileClass; d.cReqEffSlots=p.cReqEffSlots; d.cResEffSlots=p.cResEffSlots; d.cProcSlots=cProcSlots; d.bFrameSlots=p.bFrameSlots; d.bBlkSlots=p.bBlkSlots; d.bPktSlots=p.bPktSlots; d.perReq=p.perReq; d.perRes=p.perRes; return d; } }

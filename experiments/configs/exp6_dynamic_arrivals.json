@@ -1,0 +1,67 @@
+{
+  "experiment_name": "exp6_dynamic_arrivals",
+  "simulation_time_s": 60,
+  "T_ctrl_ms": 50,
+  "initial_N_values": [
+    10,
+    20,
+    30
+  ],
+  "arrival_patterns": [
+    {
+      "name": "poisson_light",
+      "type": "poisson",
+      "lambda_per_s": 0.5
+    },
+    {
+      "name": "poisson_heavy",
+      "type": "poisson",
+      "lambda_per_s": 2.0
+    },
+    {
+      "name": "depot_burst",
+      "type": "burst",
+      "burst_times_s": [
+        5,
+        10,
+        20
+      ],
+      "burst_sizes": [
+        5,
+        10,
+        15
+      ]
+    }
+  ],
+  "modes": [
+    "hpgp_csma_ca_like",
+    "fixed_reservation",
+    "adaptive_transition_aware"
+  ],
+  "B_fix_values": [
+    64,
+    128,
+    256
+  ],
+  "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "metrics": [
+    "N_t",
+    "K_t",
+    "admitted_count",
+    "rejected_count",
+    "completed_slac_count",
+    "timed_out_slac_count",
+    "dc_deadline_miss_count",
+    "mean_slac_completion_time_ms",
+    "mean_waiting_time_ms",
+    "channel_occupancy"
+  ],
+  "departure_model": "none; cumulative arrivals stress admission",
+  "heterogeneous_plc_enabled": false
+}
