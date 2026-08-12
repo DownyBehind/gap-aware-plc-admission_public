@@ -3,7 +3,7 @@ from pathlib import Path
 import sys
 ROOT = Path(__file__).resolve().parents[1]
 required = [
-'README.md','DEVELOPMENT.md','LICENSE','requirements.txt',
+'README.md','LICENSE','requirements.txt',
 'src/formulas/transition_formulas.py','src/sim/cycle_builder.py',
 'docs/model/equations.md','docs/model/physics_rules.md',
 'docs/model/slac_sequence_model.md','docs/model/plc_link_profiles.md',

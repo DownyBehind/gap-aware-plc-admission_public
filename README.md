@@ -1,4 +1,7 @@
-# gap-aware-plc-admission
+# gap-aware-plc-admission_public
+
+> Submission snapshot for ICIT 2027 — tag `icit27-submission-v1`.
+> This is the artifact repository cited by the paper's Sec. V footnote.
 
 Artifact for the ICIT 2027 submission.
 

@@ -10,4 +10,4 @@ Use: edit JSON configs, run shell scripts, then generate plots from saved result
 
 Tests: `tests/run_all_tests.sh` syntax-checks scripts and runs a smoke experiment when ns-3 is available.
 
-Expected outputs: `results/<experiment>/{config.json,metrics.csv,events.csv,summary.json,figures/}`.
+Committed outputs: `results/layer1/` and `results/ns3_e1/` (result CSVs plus `fig_*.pdf`/`fig_*.png`). Every value cited by the paper is indexed in `results/RESULTS.md`.

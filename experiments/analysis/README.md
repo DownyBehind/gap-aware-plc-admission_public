@@ -10,4 +10,4 @@ Use: run a plot script with a result directory argument.
 
 Tests: Python syntax checks and sample plot generation.
 
-Expected outputs: PNG figures under `results/<experiment>/figures/`.
+Outputs: PNG/PDF figures written alongside their source CSVs in `results/layer1/` and `results/ns3_e1/`.
