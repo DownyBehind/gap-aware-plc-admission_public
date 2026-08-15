@@ -1,0 +1,9 @@
+pattern,q,cap,K,timeline,max_elapsed,violation_gt40
+staggered 1/cycle,7,0,15,model,42,1
+staggered 1/cycle,7,0,15,impl,41,1
+cohort victim cap-max,19,2,35,model,41,1
+cohort victim cap-max,19,2,35,impl,41,1
+adversarial sweep (994 configs),19,2,sweep(max@K=14),model,41,4
+adversarial sweep (994 configs),19,2,sweep(max@K=35),impl,41,1
+adversarial sweep (994 configs),25,3,sweep(max@K=1),model,40,0
+adversarial sweep (994 configs),25,3,sweep(max@K=1),impl,39,0

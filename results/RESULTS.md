@@ -17,16 +17,18 @@ script/configuration that produces it. All runs are deterministic
 | 7 | Naive-bound counterexample finish | 1402 slots at (37, 4) — analytic value, not a measurement | formula | `src/formulas/transition_formulas.py` (`F_active_state`) | max(555+28+21, 295) + 777 + 21 |
 | 8 | Admitted-region size | 588 admitted = 295 hidden + 293 paid | `results/layer1/admission_region.csv` | `experiments/layer1/sweep_admission_region.py` | 966-cell grid |
 | 9 | Loss outcomes (§V-C) | design points (q_wc=19/cap 2 at p=1e-3, 25/cap 3 at p=1e-2): 0/1440 violations; loss-blind q=7: 3/1440 at p=1e-2, 28/86/280 at p=0.03/0.05/0.1 | `results/ns3_e1/e2_admission_variants.csv` | `experiments/ns3_e1/run_e2.py` | 20 seeds, 1440 admitted sessions per row |
-| 10 | Packet-aware bound decomposition at (37,1), q_wc=25 | 555 + (25 + 17) + 777 + B_blk = 1395 = T (equality); realized trajectory max 1389 envelope-inclusive (channel finish 1368); measured straddle overrun ≤ 17 = max message 18 − 1 | `results/ns3_e1/loss_knee.csv` (`overrun_max` column) | `experiments/ns3_e1/run_loss.py`; trajectory adjudication: `ns3/contrib/ev-plc-transition/examples/trackc-thm1.cc` | q ∈ {19, 25}, offset sweep 0..40, PER=0 |
+| 10 | Packet-aware bound decomposition at (37,1), q_wc=25 | 555 + (25 + 17) + 777 + B_blk = 1395 = T (equality); at (37,1) the realized maximum is 1386 envelope-inclusive (channel 1365); the trajectory maximum 1389 (channel 1368) occurs at the terminal state (38,0); measured straddle overrun ≤ 17 = max message 18 − 1 | `results/ns3_e1/loss_knee.csv` (`overrun_max` column) | `experiments/ns3_e1/run_loss.py`; trajectory adjudication: `ns3/contrib/ev-plc-transition/examples/trackc-thm1.cc` | q ∈ {19, 25}, offset sweep 0..40, PER=0 |
 | 11 | Effective-parameter knee shifts under IFS (Table I, IFS 1–3 rows) | {17,16,14,11}, {16,15,13,10}, {15,14,12,9} | `results/ns3_e1/overhead_knee.csv` | `experiments/ns3_e1/run_overhead.py` | IFS ∈ {1,2,3}, 600 cells, zero error |
 | 12 | Loss-completion ratio | 1/(1−p) to four digits (1.001, 1.0101) | `results/ns3_e1/loss_knee.csv` | `experiments/ns3_e1/run_loss.py` | p ∈ {1e-3, 1e-2} |
 | 13 | Contention baseline with authenticating arrivals | 96.7% DC miss at (30,1), saturating to 0.989 at (30,35) | `results/ns3_e1/e4_policy_comparison_event.csv` | `experiments/ns3_e1/run_trackc_c4.py` | `hpgp_csma_ca` rows, 20 seeds |
-| 14 | Fixed reservations have no safe setting | 10%: 100% session-deadline violations at K=35; 25/50%: DC miss 0.82–1.00 at high load | `results/ns3_e1/e4_policy_comparison_event.csv` | `experiments/ns3_e1/run_trackc_c4.py` | `fixed_10pct/25pct/50pct` rows |
+| 14 | None of the three evaluated fixed-reservation fractions protects both deadlines across the tested grid | 10%: 100% session-deadline violations at K=35; 25/50%: DC miss 0.82–1.00 at high load | `results/ns3_e1/e4_policy_comparison_event.csv` | `experiments/ns3_e1/run_trackc_c4.py` | `fixed_10pct/25pct/50pct` rows |
 | 15 | Cond-B ablation (Cond A only) | DC population reaches 40 at N₀=30 (47 at (15,35)); F_DC(40) = 1461 > 1395; ≈94% DC miss (95,750 / 101,920, as reported in the paper) at (15,35) with zero D_g violations | `results/ns3_e1/e4_ablation_condA_only.csv` | `trackc-e4-scheduled --condB=0` (same invocation as `run_trackc_c4.py`, Cond B flag off) | same grid/seeds/RNG as the policy comparison |
 | 16 | Admission cost at (30,35) | 8/35 candidates per seed admitted (160/700), all at the first boundary (wait 0); mean admit wait 92.6 cycles is horizon-censored (27/35 right-censored at the 120-cycle horizon) | `results/ns3_e1/e4_policy_counts.csv`, `results/ns3_e1/e4_policy_comparison_event.csv` (`admit_wait_cycles`) | `experiments/ns3_e1/run_trackc_c4.py` | `acbs_qwc25`, 20 seeds |
 | 17 | Provisioned credit under bursts | 0 / 1,920 admitted sessions violate D_g for bad-state sojourns {3, 15, 60, 300} slots | `results/ns3_e1/g3a_qwc_burst.csv` | `experiments/ns3_e1/run_trackc_c4.py` (`trackc-g3`, q_wc=25 cap 3) | 20 seeds × 4 sojourns × 3 per_bad |
 | 18 | Link-aware experiment DC misses | 0 / 102,802 DC EV-cycles (both variants combined) | `results/ns3_e1/g3b_link_aware.csv` | same as #4 | same as #4 |
 | 19 | Design corrections (honest findings) | round-robin window sharing starves late sessions at p=0 (design note in `ns3/standalone/e2_sim.cc`); a stale map kept across a membership change collides in 12 of 18 `stale_persist` alignments; backlog-free slot approximation optimistic in overload by up to +75 pp (fixed, (30,10)) / +11.1 pp (CSMA, (30,1)) | `results/ns3_e1/e3_adversarial.csv`, `results/ns3_e1/c3_csma_comparison.csv`, `results/ns3_e1/e4_policy_comparison.csv` vs `e4_policy_comparison_event.csv` | `experiments/ns3_e1/run_e3.py`, `run_trackc_c3.py`, `run_e4e5.py` + `run_trackc_c4.py` | Fig. 4 reports the corrected (event-driven) numbers |
+| 20 | Loss-free cohort completion (Theorem 2 adjudication) | exhaustive K = 1..38 simultaneous cohorts, q = 7: per-session max elapsed 40 cycles = D_g exactly (zero margin) on the paper's 39-window timeline, first attained at K = 26; 39 cycles on the engine timeline; 0 violations — deterministic loss-free dynamics make the sweep a complete case analysis | `results/theorem2_completion.csv` | `experiments/analysis/run_theorem2_adjudication.py` (discipline port: `theorem2_adjudication.py`, verified against `e2_sim` capMode 2: completion indices 32/34/36/37 at K = 1/4/8/16) | q = 7, cap 0, all admitted at cycle 0 |
+| 21 | Loss-aware credits are provisioning values, not a worst-case completion guarantee | staggered lossless admission (1/cycle, K = 15): 42 cycles (39-window timeline) / 41 (engine) > D_g — the cohort premise is necessary; q_wc = 19/cap 2 within-cap cohort counterexample (one session cap-maxed, demand 723 ≤ 729): 41 cycles > D_g on both timelines; q_wc = 25/cap 3: no violation in the 994-configuration cohort-scoped search, maxima 40 (39-window) / 39 (engine) — a search result, not a proof | `results/theorem2_adversarial.csv`, `results/theorem2_counterexample_traces.txt` | `experiments/analysis/run_theorem2_adjudication.py` | fixed failure families + `random.Random(7)` sweep (40 patterns/K, K ∈ {1..16, 20, 24, 30, 35}) |
 
 ## Release-aware credit requirement (`release_aware_credit.csv`)
 
@@ -42,8 +44,52 @@ q_req = max_i q_req(i) = **7** (lossless), **19** (n_r = 2), **25**
 (n_r = 3), each attained at the first release point (SLAC_PARM.REQ,
 r = 0) — the release structure does not raise the credit requirement
 beyond the aggregate values. Side identities: ceil((247 + 2*241)/39) = 19,
-ceil((247 + 3*241)/39) = 25; completion cycles ceil(729/19)+1 = 40,
-ceil(970/25)+1 = 40, ceil(247/7)+1 = 37.
+ceil((247 + 3*241)/39) = 25. The cycle counts ceil(729/19)+1 = 40,
+ceil(970/25)+1 = 40, ceil(247/7)+1 = 37 are entitlement-coverage
+arithmetic (service windows needed plus the joining cycle), not
+completion guarantees; adjudicated completion behavior is recorded in
+`theorem2_completion.csv` / `theorem2_adversarial.csv` (claims #20–21).
+
+## Theorem 2 completion adjudication (`theorem2_completion.csv`, `theorem2_adversarial.csv`)
+
+Deterministic adjudication of the setup-completion guarantee against the
+exact committed credit discipline (capMode 2: per-session signed credit,
+aggregate allowance = q·K_active − debt, non-preemptive straddle → debt,
+persistent service pointer = first blocked session). The checker
+(`experiments/analysis/theorem2_adjudication.py`) is an RNG-free port
+verified against the committed `e2_sim` engine (completion cycle indices
+32/34/36/37 at K = 1/4/8/16, q = 7, PER = 0, capMode 2); the adversary
+chooses every retry outcome (≤ cap per message), admission offsets, and
+session order. Two timeline conventions are reported: **39-window** (the
+paper's credit derivation — no credit or service in the joining cycle)
+and **engine** (credit begins in the admission cycle; one cycle earlier).
+
+Findings (`experiments/analysis/run_theorem2_adjudication.py`):
+
+1. **Loss-free simultaneous cohorts complete** (claim #20): exhaustive
+   execution of all cohort sizes K = 1..38 — loss-free dynamics are
+   deterministic per K, so the sweep is a complete case analysis —
+   bounds per-session completion at **40 cycles = D_g exactly** (zero
+   margin, first attained at K = 26) on the 39-window timeline, 39 on
+   the engine timeline, with zero violations.
+2. **The cohort premise is necessary**: staggered admission (one
+   session per cycle, K = 15) violates D_g with **no losses at all**
+   (42 / 41 cycles). Mechanism: as earlier sessions complete, the
+   aggregate window quota q·K_active contracts, so service deferred
+   during the crowded phase can lack the supply to be recovered.
+3. **Entitlement coverage is not a worst-case service guarantee**
+   (claim #21): at q_wc = 19/cap 2 a within-cap simultaneous-cohort
+   pattern (one session cap-maxed, demand 723 ≤ C_wc = 729) completes
+   at 41 cycles > D_g; at q_wc = 25/cap 3 the cohort-scoped search
+   finds no violation (maxima 40 / 39) — a search result, not a proof.
+4. All committed experiment observations are unaffected: the evaluated
+   workloads admit sessions in simultaneous bursts, and their recorded
+   zero-violation counts (claims #9, #17) remain exact observations.
+
+The committed e2 CSVs carry no completion-cycle column and the engine's
+violation counter tests only elapsed ≥ 40 cycles, so sub-deadline
+completion margins were not previously recorded; the adjudication
+artifacts add that visibility.
 
 ## Cond-A-only ablation (`ns3_e1/e4_ablation_condA_only.csv`)
 

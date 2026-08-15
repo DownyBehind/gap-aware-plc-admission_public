@@ -67,6 +67,16 @@ to delay.
 
 Semantics: this is an admission-time per-session multiple check, L_init-inclusive —
 `ceil(247/7)*T + T = 37T = 1850 ms <= D_slac = 2000 ms` at the baseline.
+This is **entitlement-coverage arithmetic** (windows needed plus the
+joining cycle), not a per-session completion guarantee under the shared
+aggregate window. Adjudicated completion (exhaustive deterministic
+execution of the credit discipline; `results/theorem2_completion.csv`,
+RESULTS.md claims #20-21): every loss-free **simultaneously admitted**
+cohort of size K <= 38 completes within `ceil(D_g/T) = 40` cycles of
+admission on the 39-window convention — exactly D_g, zero margin, first
+attained at K = 26 (engine convention: 39 cycles). The cohort premise is
+necessary: staggered admission (one session per cycle, K = 15) reaches
+42/41 cycles > D_g with no losses at all.
 
 B_pkt/L_margin removal rationale: the
 packetization debt is bounded by a single-frame envelope under debt-neutral
@@ -100,7 +110,15 @@ span, the joining cycle carries no credit): `q_wc(p) = ceil(C_wc / 39)`,
 | 1e-3 | 2 | 729 | **19** | 247.25 | **7** |
 | 1e-2 | 3 | 970 | **25** | 249.49 | **7** |
 
-Completion check under q_wc: `(ceil(729/19)+1)*T = 40 cycles`, `(ceil(970/25)+1)*T = 40 cycles` — both = D_g (= D_slac).
+Entitlement-coverage check under q_wc: `(ceil(729/19)+1)*T = 40 cycles`,
+`(ceil(970/25)+1)*T = 40 cycles` — both = D_g (= D_slac) exactly.
+Coverage is not a worst-case completion guarantee: deterministic
+adversarial adjudication (`results/theorem2_adversarial.csv`) exhibits a
+within-cap q_wc=19 simultaneous-cohort pattern (one session cap-maxed,
+demand 723 <= C_wc = 729) completing at 41 cycles > D_g, and finds no
+q_wc=25 violation in the cohort-scoped search (maxima 40 on the
+39-window convention / 39 on the engine convention) — a search result,
+not a proof. The q_wc values are provisioning points.
 
 Two structural notes:
 
@@ -139,7 +157,11 @@ losses that is cycle t0+m+1, i.e. a wait of `eta = (m+1)` cycles. The nominal
 completion bound already contains one beacon wait (L_init), so beacon loss
 adds `m*T`. Allowed consecutive losses from the deadline margin:
 fluid-service bound 1864.04 ms -> margin 135.96 ms = 2.72T -> **m_max = 2**;
-completion bound 1850 ms -> margin 150 ms = 3T -> **m_max = 3**.
+completion bound 1850 ms -> margin 150 ms = 3T -> **m_max = 3**. Both
+m_max derivations consume the margin of the single-session entitlement
+bound; the adjudicated worst loss-free cohort has zero completion margin
+(40 cycles = D_g, claims #20-21), so no beacon-loss allowance can be
+drawn from cohort completion margin at that boundary.
 
 ## Slack Degradation
 
