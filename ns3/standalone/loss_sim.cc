@@ -1,3 +1,5 @@
+// NOTE: this tier retains the superseded 20-message / 241-slot SLAC
+// sequence. See docs/model/slac_sequence_model.md.
 // Stage 5c-ii loss-physics simulator (standalone; promotion into the module
 // happens with track B). Replays multi-cycle SLAC message sequences under a
 // credit window with debt carry (postponement rule) and optional frame errors.

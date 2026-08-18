@@ -4,7 +4,7 @@
 Theorem 2's aggregate-workload argument ignores message release times;
 under MAC-contract property (v) unused credit is reclaimed within the
 cycle and does not accumulate. This script computes, at every release
-point i of the 20-message SLAC sequence,
+point i of the 19-message SLAC sequence,
 
     q_req(i) = ceil( C_i^rem / nu_i )
 
@@ -19,11 +19,11 @@ leaving 39 service windows. Message i, released at r_i ms, can use the
 windows whose start offset satisfies k*T >= r_i:
 nu_i = 39 - floor(r_i / T_ms).
 
-Sequence source: the 20-message table of the replay engines
-(ns3/standalone/loss_sim.cc PaperSequence(), identical in
-ns3/contrib/ev-plc-transition/model/ev-plc-policy-mac.cc), which
-docs/model/slac_sequence_model.md designates as the sequence the replay
-uses (sum 241 slots, releases 0..775 ms). Values are copied verbatim.
+Sequence source: the canonical 19-message table of
+experiments/analysis/theorem2_adjudication.py (SEQ), which
+docs/model/slac_sequence_model.md designates as the canonical sequence
+(sum 230 slots, releases 0..775 ms; the ns-3 replay tiers retain the
+superseded 20-message table). Values are copied verbatim.
 
 Remaining-demand accounting per setting:
   base   : C_i^rem = sum_{j>=i} c_j                      (lossless)
@@ -33,7 +33,7 @@ i.e., first transmissions are budgeted by the conservative envelope
 C_slac = 247 (its remainder after the minimum consumption of earlier
 messages) and each remaining message may be retransmitted n_r times at
 its actual length. At i = 1 this reproduces the aggregate envelopes
-C_wc = 247 + n_r * 241 (729 and 970).
+C_wc = 247 + n_r * 230 (707 and 937).
 """
 import csv
 import math
@@ -54,7 +54,6 @@ SEQ = [
     (11, 35, "START_ATTEN_CHAR.IND.1"),
     (11, 55, "START_ATTEN_CHAR.IND.2"),
     (11, 75, "START_ATTEN_CHAR.IND.3"),
-    (11, 95, "START_ATTEN_CHAR.RSP"),
 ] + [(12, 105 + 40 * i, f"MNBC_SOUND.IND.{i+1}") for i in range(10)] + [
     (18, 535, "ATTEN_CHAR.IND"),
     (12, 635, "ATTEN_CHAR.RSP"),
@@ -63,8 +62,8 @@ SEQ = [
 ]
 
 TOTAL = sum(c for c, _, _ in SEQ)
-assert TOTAL == 241, TOTAL
-assert len(SEQ) == 20
+assert TOTAL == 230, TOTAL
+assert len(SEQ) == 19
 
 SETTINGS = [("base", 0), ("nr2", 2), ("nr3", 3)]
 
@@ -105,8 +104,8 @@ def main() -> None:
     print("--- side checks ---")
     for nr, exp in ((2, 19), (3, 25)):
         v = math.ceil((C_SLAC + nr * TOTAL) / WINDOWS)
-        print(f"ceil((247 + {nr}*241)/39) = {v} (expected {exp})")
-    for tot, q in ((729, 19), (970, 25), (247, 7)):
+        print(f"ceil((247 + {nr}*{TOTAL})/39) = {v} (expected {exp})")
+    for tot, q in ((707, 19), (937, 25), (247, 7)):
         print(f"ceil({tot}/{q}) + 1 = {math.ceil(tot / q) + 1}")
     print(f"csv: {OUT}")
 

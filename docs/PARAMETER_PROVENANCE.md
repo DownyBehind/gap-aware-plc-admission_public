@@ -26,7 +26,7 @@ Reproduction targets for every reported result are indexed in
 | C_proc | 280 slots (~10 ms) | response-ready processing latency | assumption |
 | C_res | 21 slots | DC response airtime | reference-profile assumption |
 | D_g | 40T (~2 s) | admitted-session deadline | design assumption |
-| Σℓ_i | 241 slots | modeled 20-message SLAC sequence demand | derived from reference sequence |
+| Σℓ_i | 230 slots | modeled 19-message SLAC sequence demand | derived from reference sequence |
 | C_slac | 247 slots | provisioned SLAC session budget | design budget |
 | B_blk | 21 slots | cycle-head non-preemptive carry-in bound | derived from reference profile |
 | B_pkt | 21 slots | in-map non-preemptive packet guard | derived from reference profile |
@@ -101,25 +101,28 @@ C_res   : 82 + EXI 380 = 462 B → 369.6 + 350 = 719.6 µs → 21 slots
 
 ## 3. SLAC reference sequence and session budget
 
-The paper uses a 20-message SLAC reference sequence with modeled airtimes
-of 11–18 slots and total modeled demand of 241 slots. The sequence structure
+The paper uses a 19-message SLAC reference sequence with modeled airtimes
+of 11–18 slots and total modeled demand of 230 slots. The sequence structure
 and release ordering follow ISO 15118-3; the individual slot airtimes are
 reference-profile inputs rather than measured PHY airtimes.
 
 | Symbol | Value | Type | Source | Derivation |
 |---|---|---|---|---|
-| ℓ_i (20 messages) | 11–18 slots | reference-profile constants | `ns3/standalone/loss_sim.cc` `PaperSequence()` (the fixed 20-message sequence table) | fixed model constants; not claimed as measured PHY airtimes |
-| Σ ℓ_i | 241 slots | derived | — | 6×11 + 10×12 + 18 + 12 + 12 + 13 |
+| ℓ_i (19 messages) | 11–18 slots | reference-profile constants | `experiments/analysis/theorem2_adjudication.py` (`SEQ`, the canonical sequence table); message set fixed by direct comparison against ISO 15118-3:2015 Annex A (Table A.1 `C_EV_start_atten_char_inds` = 3, Table A.4 MME set, Figure A.1) | fixed model constants; not claimed as measured PHY airtimes |
+| Σ ℓ_i | 230 slots | derived | — | 5×11 + 10×12 + 18 + 12 + 12 + 13 |
 | C_slac | 247 slots | provisioned design budget | see note | provisioned budget — see note |
-| sequence structure (20 msgs) | — | standard | ISO 15118-3 Annex A.9 (matching process) | — |
+| sequence structure (19 msgs) | — | standard | ISO 15118-3 Annex A.9 (matching process) | — |
 | release schedule (0–775 ms) | — | model constants consistent with ISO 15118-3 Annex A Table A.1 timers | see release note | — |
 | B_str | 17 slots | derived | — | max ℓ_i − 1 = 18 − 1 |
 
 C_slac note: `C_slac = 247` is a provisioned design budget around the
-modeled 241-slot sequence. The six-slot reserve is not standards-derived.
-Replacing 247 by 241 does not change q=7 or the q_wc values 19 and 25
-(⌈241/39⌉ = 7; 241+2·241 = 723 → 19; 241+3·241 = 964 → 25); it changes only
-the loss-blind completion count from 37 to 36 cycles. In the evaluated grid,
+modeled 230-slot sequence. The seventeen-slot reserve is not
+standards-derived, and after the sequence correction it is
+**load-bearing** for the published credits: replacing 247 by the bare
+sum 230 **changes both q and q_wc**
+(⌈230/39⌉ = 6; 230+2·230 = 690 → 18; 230+3·230 = 920 → 24, versus the
+published 7 / 19 / 25). The repository retains `C_slac = 247` as the
+provisioning constant. In the evaluated grid,
 realized demand did not exceed the provisioned budget.
 
 ℓ_i note: `CM_ATTEN_CHAR.IND` has a variable-length attenuation-profile
@@ -127,21 +130,23 @@ payload in the specification. The 18-slot value is therefore part of the
 evaluated reference profile rather than a claimed universal protocol
 maximum.
 
-Release map (as implemented in `ns3/standalone/loss_sim.cc`
-`PaperSequence()`; Theorem 2's release-aware check iterates these 20
-release points directly):
+Release map (canonical table in
+`experiments/analysis/theorem2_adjudication.py` `SEQ`; Theorem 2's
+release-aware check iterates these 19 release points directly. The
+former row `START_ATTEN_CHAR.RSP` (11 slots, 95 ms) was removed by the
+ISO 15118-3 Annex A comparison — the standard defines no such
+message):
 
 | i | message | ℓ_i (slots) | r_i (ms) |
 |---|---|---|---|
 | 1 | SLAC_PARM.REQ | 11 | 0 |
 | 2 | SLAC_PARM.CNF | 11 | 15 |
 | 3–5 | START_ATTEN_CHAR.IND ×3 | 11 | 35 / 55 / 75 |
-| 6 | START_ATTEN_CHAR.RSP | 11 | 95 |
-| 7–16 | MNBC_SOUND.IND ×10 | 12 | 105..465 (step 40) |
-| 17 | ATTEN_CHAR.IND | 18 | 535 |
-| 18 | ATTEN_CHAR.RSP | 12 | 635 |
-| 19 | SLAC_MATCH.REQ | 12 | 755 |
-| 20 | SLAC_MATCH.CNF | 13 | 775 |
+| 6–15 | MNBC_SOUND.IND ×10 | 12 | 105..465 (step 40) |
+| 16 | ATTEN_CHAR.IND | 18 | 535 |
+| 17 | ATTEN_CHAR.RSP | 12 | 635 |
+| 18 | SLAC_MATCH.REQ | 12 | 755 |
+| 19 | SLAC_MATCH.CNF | 13 | 775 |
 
 Release note: the implemented release instants are model constants chosen
 to be consistent with the ISO 15118-3 Table A.1 timing structure. A
@@ -168,8 +173,8 @@ value, B_str is tight in scope.
 | q | 7 | derived | ⌈C_slac / 39⌉ = ⌈247/39⌉ |
 | 39 (service windows) | — | derived | ⌈D_g/T⌉ − 1 = 40 − 1 (the joining cycle carries no credit) |
 | ε | 10⁻⁶ | design target | stated target session-failure probability |
-| n_r (retry cap) | 2 / 3 | derived | least integer with 20·p^(n_r+1) ≤ ε at p = 10⁻³ / 10⁻² |
-| C_wc | 729 / 970 | derived | C_slac + n_r · Σℓ_i |
+| n_r (retry cap) | 2 / 3 | derived | least integer with 19·p^(n_r+1) ≤ ε at p = 10⁻³ / 10⁻² |
+| C_wc | 707 / 937 | derived | C_slac + n_r · Σℓ_i |
 | q_wc | 19 / 25 | derived | ⌈C_wc / 39⌉ |
 
 ## 6. Channel / loss parameters

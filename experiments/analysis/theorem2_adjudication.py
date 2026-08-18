@@ -18,12 +18,13 @@ Timelines:
 import itertools
 import sys
 
-SEQ = [(11, 0), (11, 15), (11, 35), (11, 55), (11, 75), (11, 95)] + \
+SEQ = [(11, 0), (11, 15), (11, 35), (11, 55), (11, 75)] + \
       [(12, 105 + 40 * i) for i in range(10)] + \
       [(18, 535), (12, 635), (12, 755), (13, 775)]
 T_MS = 50.0
 SUM_L = sum(l for l, _ in SEQ)
-assert SUM_L == 241 and len(SEQ) == 20
+NMSG = len(SEQ)
+assert SUM_L == 230 and NMSG == 19
 
 
 def run(q, cap, fails, admits, timeline, horizon=60):
@@ -58,7 +59,7 @@ def run(q, cap, fails, admits, timeline, horizon=60):
             if idx not in active:
                 continue
             i = idx
-            while credit[i] > 0 and next_m[i] < 20:
+            while credit[i] > 0 and next_m[i] < NMSG:
                 length, rel = SEQ[next_m[i]]
                 if (cycle - admits[i]) * T_MS < rel:
                     break
@@ -77,7 +78,7 @@ def run(q, cap, fails, admits, timeline, horizon=60):
                 else:
                     next_m[i] += 1
                     att[i] = 0
-                    if next_m[i] == 20:
+                    if next_m[i] == NMSG:
                         done[i] = cycle
                         break
         g_debt = max(0, g_debt + consumed - quota)
@@ -103,7 +104,7 @@ def check(q, cap, fails, admits, timeline):
     viol = []
     for i, (win, cyc, ok) in enumerate(res):
         cw = c_actual(fails[i])
-        c_env = {7: 247, 19: 729, 25: 970}[q]   # theorem's C_wc envelope
+        c_env = {7: 247, 19: 707, 25: 937}[q]   # theorem's C_wc envelope
         bound_win = -(-c_env // q)       # ceil(C_wc/q) service windows
         dg_cycles = 40
         if not ok:
@@ -128,21 +129,21 @@ def main():
 
     def fail_patterns(cap, k, victim):
         pats = []
-        maxf = [ [cap] * 20 for _ in range(k)]
+        maxf = [ [cap] * NMSG for _ in range(k)]
         pats.append(('all-max', maxf))
         if cap > 0:
-            v_only = [[cap] * 20 if i == victim else [0] * 20 for i in range(k)]
+            v_only = [[cap] * NMSG if i == victim else [0] * NMSG for i in range(k)]
             pats.append(('victim-max', v_only))
-            others = [[0] * 20 if i == victim else [cap] * 20 for i in range(k)]
+            others = [[0] * NMSG if i == victim else [cap] * NMSG for i in range(k)]
             pats.append(('others-max', others))
-            front = [[cap] * 10 + [0] * 10 for _ in range(k)]
+            front = [[cap] * (NMSG // 2) + [0] * (NMSG - NMSG // 2) for _ in range(k)]
             pats.append(('front-max', front))
-            back = [[0] * 10 + [cap] * 10 for _ in range(k)]
+            back = [[0] * (NMSG - NMSG // 2) + [cap] * (NMSG // 2) for _ in range(k)]
             pats.append(('back-max', back))
-            last3 = [[0] * 17 + [cap] * 3 for _ in range(k)]
+            last3 = [[0] * (NMSG - 3) + [cap] * 3 for _ in range(k)]
             pats.append(('tail-max', last3))
         else:
-            pats.append(('none', [[0] * 20 for _ in range(k)]))
+            pats.append(('none', [[0] * NMSG for _ in range(k)]))
         return pats
 
     for timeline in globals().get('_TIMELINES', ('model', 'impl')):
@@ -217,7 +218,7 @@ def run_traced(q, cap, fails, admits, timeline, horizon=90):
             if idx not in active:
                 continue
             i = idx
-            while credit[i] > 0 and next_m[i] < 20:
+            while credit[i] > 0 and next_m[i] < NMSG:
                 length, rel = SEQ[next_m[i]]
                 if (cycle - admits[i]) * T_MS < rel:
                     break
@@ -237,7 +238,7 @@ def run_traced(q, cap, fails, admits, timeline, horizon=90):
                 else:
                     next_m[i] += 1
                     att[i] = 0
-                    if next_m[i] == 20:
+                    if next_m[i] == NMSG:
                         done[i] = cycle
                         break
         trace.append((cycle, len(active), quota, allowance, consumed, g_debt,

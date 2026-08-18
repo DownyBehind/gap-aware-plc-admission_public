@@ -1,3 +1,5 @@
+// NOTE: this tier retains the superseded 20-message / 241-slot SLAC
+// sequence. See docs/model/slac_sequence_model.md.
 #include "slac-sequence-model.h"
 namespace ns3 {
 std::string ToString(SlacMessageType t){ switch(t){case SlacMessageType::SLAC_PARM_REQ:return "SLAC_PARM_REQ";case SlacMessageType::SLAC_PARM_CNF:return "SLAC_PARM_CNF";case SlacMessageType::START_ATTEN_CHAR_IND:return "START_ATTEN_CHAR_IND";case SlacMessageType::MNBC_SOUND_IND:return "MNBC_SOUND_IND";case SlacMessageType::ATTEN_CHAR_IND:return "ATTEN_CHAR_IND";case SlacMessageType::ATTEN_CHAR_RSP:return "ATTEN_CHAR_RSP";case SlacMessageType::SLAC_MATCH_REQ:return "SLAC_MATCH_REQ";case SlacMessageType::SLAC_MATCH_CNF:return "SLAC_MATCH_CNF";} return "UNKNOWN"; }

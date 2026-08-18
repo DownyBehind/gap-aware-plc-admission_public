@@ -95,7 +95,7 @@ supplementary figure of the Table I knee data (not shipped in the paper).
 | Table I (admission knees vs IFS) | `results/layer1/knee_verification.csv` (IFS=0), `results/ns3_e1/overhead_knee.csv` (IFS 1–3) | `experiments/layer1/verify_knee_e1.py`, `experiments/ns3_e1/run_overhead.py` | — |
 | Table II (bursty vs i.i.d. by residual room) | `results/ns3_e1/g3_burst_vs_iid.csv`, `results/ns3_e1/g3i_iid_baseline.csv` | `experiments/ns3_e1/run_g3_burst_vs_iid.py` | — |
 | Sec. V-C loss outcomes | `results/ns3_e1/e2_admission_variants.csv` | `experiments/ns3_e1/run_e2.py` | variants `A_loss_blind` (q=7), `C_q_wc` (q_wc caps) |
-| Theorem 2 (loss-free cohort completion; provisioning stress check) | `results/theorem2_completion.csv`, `results/theorem2_adversarial.csv` | `experiments/analysis/run_theorem2_adjudication.py` | — |
+| Theorem 2 (loss-free cohort completion; provisioning stress check) | `results/theorem2_completion.csv`, `results/theorem2_adversarial.csv`, `results/theorem2_staggered.csv` | `experiments/analysis/run_theorem2_adjudication.py`, `experiments/analysis/staggered_search.py` | — |
 
 Numeric claims and their producing runs are indexed in
 `results/RESULTS.md`.

@@ -22,7 +22,7 @@ Outputs (relative to the repository root):
           staggered admission (one session per cycle, q=7, cap 0,
           K=15) and a simultaneous cohort with one session taking
           the retry cap on every message (q_wc=19, cap 2, K=35,
-          within-cap demand 723 <= C_wc = 729).
+          within-cap demand 690 <= C_wc = 707).
       (b) An adversarial search over the loss-aware design points
           (q_wc=19/cap 2, q_wc=25/cap 3), scoped to the theorem's
           cohort premise (simultaneous admission at cycle 0; the
@@ -52,7 +52,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from theorem2_adjudication import run, run_traced, c_actual
+from theorem2_adjudication import run, run_traced, c_actual, NMSG
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / 'results'
@@ -65,7 +65,7 @@ def lossfree_exhaustive():
     rows = []
     for timeline in TIMELINES:
         for k in range(1, 39):
-            fails = [[0] * 20 for _ in range(k)]
+            fails = [[0] * NMSG for _ in range(k)]
             res = run(7, 0, fails, [0] * k, timeline)
             assert all(ok for _, _, ok in res)
             elapsed = [cyc for _, cyc, _ in res]
@@ -85,9 +85,9 @@ def counterexamples():
     rows, traces = [], []
     cases = [
         ('staggered 1/cycle', 7, 0, 15,
-         [[0] * 20 for _ in range(15)], list(range(15))),
+         [[0] * NMSG for _ in range(15)], list(range(15))),
         ('cohort victim cap-max', 19, 2, 35,
-         [[2] * 20 if i == 34 else [0] * 20 for i in range(35)], [0] * 35),
+         [[2] * NMSG if i == 34 else [0] * NMSG for i in range(35)], [0] * 35),
     ]
     for name, q, cap, k, fails, admits in cases:
         for timeline in TIMELINES:
@@ -129,7 +129,7 @@ def adversarial_search():
         for k in ks:
             pats = []
             for _ in range(40):
-                fails = [[rng.randint(0, cap) for _ in range(20)]
+                fails = [[rng.randint(0, cap) for _ in range(NMSG)]
                          for _ in range(k)]
                 pats.append(fails)
             random_pats[k] = pats
@@ -139,19 +139,21 @@ def adversarial_search():
             for k in ks:
                 cand = []
                 # fixed failure families x fixed offset families
-                fam = [('all-max', [[cap] * 20 for _ in range(k)])]
+                fam = [('all-max', [[cap] * NMSG for _ in range(k)])]
                 for victim in sorted({0, k - 1, k // 2}):
                     fam.append((f'victim-max@{victim}',
-                                [[cap] * 20 if i == victim else [0] * 20
+                                [[cap] * NMSG if i == victim else [0] * NMSG
                                  for i in range(k)]))
                     fam.append((f'others-max@{victim}',
-                                [[0] * 20 if i == victim else [cap] * 20
+                                [[0] * NMSG if i == victim else [cap] * NMSG
                                  for i in range(k)]))
-                fam.append(('front-max', [[cap] * 10 + [0] * 10
+                fam.append(('front-max', [[cap] * (NMSG // 2)
+                                          + [0] * (NMSG - NMSG // 2)
                                           for _ in range(k)]))
-                fam.append(('back-max', [[0] * 10 + [cap] * 10
+                fam.append(('back-max', [[0] * (NMSG - NMSG // 2)
+                                         + [cap] * (NMSG // 2)
                                          for _ in range(k)]))
-                fam.append(('tail-max', [[0] * 17 + [cap] * 3
+                fam.append(('tail-max', [[0] * (NMSG - 3) + [cap] * 3
                                          for _ in range(k)]))
                 for _, fails in fam:
                     cand.append(fails)
@@ -159,7 +161,7 @@ def adversarial_search():
                 admits = [0] * k
                 for fails in cand:
                     # enforce the within-cap demand premise C <= C_wc
-                    c_env = {19: 729, 25: 970}[q]
+                    c_env = {19: 707, 25: 937}[q]
                     if any(c_actual(f) > c_env for f in fails):
                         continue
                     n_cfg += 1

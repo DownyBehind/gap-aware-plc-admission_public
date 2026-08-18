@@ -71,12 +71,13 @@ This is **entitlement-coverage arithmetic** (windows needed plus the
 joining cycle), not a per-session completion guarantee under the shared
 aggregate window. Adjudicated completion (exhaustive deterministic
 execution of the credit discipline; `results/theorem2_completion.csv`,
-RESULTS.md claims #20-21): every loss-free **simultaneously admitted**
-cohort of size K <= 38 completes within `ceil(D_g/T) = 40` cycles of
-admission on the 39-window convention — exactly D_g, zero margin, first
-attained at K = 26 (engine convention: 39 cycles). The cohort premise is
-necessary: staggered admission (one session per cycle, K = 15) reaches
-42/41 cycles > D_g with no losses at all.
+RESULTS.md claims #20-22): every loss-free **simultaneously admitted**
+cohort of size K <= 38 completes within 38 cycles of
+admission on the 39-window convention — a 2-cycle margin under
+D_g = 40, first attained at K = 21 (engine convention: 37 cycles).
+A pre-declared exhaustive staggered search (K = 2..38,
+period ∈ {1, 2, 3, 5}, all three design points, both timelines;
+`results/theorem2_staggered.csv`) finds no D_g violation either.
 
 B_pkt/L_margin removal rationale: the
 packetization debt is bounded by a single-frame envelope under debt-neutral
@@ -96,7 +97,7 @@ runtime.
 
 Worst-case and expected per-session channel demand:
 
-`C_wc(p, eps) = C_slac + n_r * sum_m l_m = 247 + 241 * n_r`   (first
+`C_wc(p, eps) = C_slac + n_r * sum_m l_m = 247 + 230 * n_r`   (first
 transmissions at the envelope; retries repeat the per-message airtimes, not the
 envelope's six-slot excess)
 `W_exp(p) = C_slac / (1 - p)`
@@ -107,17 +108,18 @@ span, the joining cycle carries no credit): `q_wc(p) = ceil(C_wc / 39)`,
 
 | p | n_r (eps=1e-6) | C_wc | q_wc | W_exp | q_exp |
 |---|---|---|---|---|---|
-| 1e-3 | 2 | 729 | **19** | 247.25 | **7** |
-| 1e-2 | 3 | 970 | **25** | 249.49 | **7** |
+| 1e-3 | 2 | 707 | **19** | 247.25 | **7** |
+| 1e-2 | 3 | 937 | **25** | 249.49 | **7** |
 
-Entitlement-coverage check under q_wc: `(ceil(729/19)+1)*T = 40 cycles`,
-`(ceil(970/25)+1)*T = 40 cycles` — both = D_g (= D_slac) exactly.
+Entitlement-coverage check under q_wc: `(ceil(707/19)+1)*T = 39 cycles`,
+`(ceil(937/25)+1)*T = 39 cycles` — one cycle inside D_g (= D_slac).
 Coverage is not a worst-case completion guarantee: deterministic
 adversarial adjudication (`results/theorem2_adversarial.csv`) exhibits a
 within-cap q_wc=19 simultaneous-cohort pattern (one session cap-maxed,
-demand 723 <= C_wc = 729) completing at 41 cycles > D_g, and finds no
-q_wc=25 violation in the cohort-scoped search (maxima 40 on the
-39-window convention / 39 on the engine convention) — a search result,
+demand 690 <= C_wc = 707) completing at 40 cycles = D_g exactly — the
+bound is reached but not exceeded — and finds no
+q_wc=25 violation in the cohort-scoped search (maxima 38 on the
+39-window convention / 37 on the engine convention) — a search result,
 not a proof. The q_wc values are provisioning points.
 
 Two structural notes:

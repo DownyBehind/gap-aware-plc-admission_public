@@ -27,28 +27,33 @@ script/configuration that produces it. All runs are deterministic
 | 17 | Provisioned credit under bursts | 0 / 1,920 admitted sessions violate D_g for bad-state sojourns {3, 15, 60, 300} slots | `results/ns3_e1/g3a_qwc_burst.csv` | `experiments/ns3_e1/run_trackc_c4.py` (`trackc-g3`, q_wc=25 cap 3) | 20 seeds × 4 sojourns × 3 per_bad |
 | 18 | Link-aware experiment DC misses | 0 / 102,802 DC EV-cycles (both variants combined) | `results/ns3_e1/g3b_link_aware.csv` | same as #4 | same as #4 |
 | 19 | Design corrections (honest findings) | round-robin window sharing starves late sessions at p=0 (design note in `ns3/standalone/e2_sim.cc`); a stale map kept across a membership change collides in 12 of 18 `stale_persist` alignments; backlog-free slot approximation optimistic in overload by up to +75 pp (fixed, (30,10)) / +11.1 pp (CSMA, (30,1)) | `results/ns3_e1/e3_adversarial.csv`, `results/ns3_e1/c3_csma_comparison.csv`, `results/ns3_e1/e4_policy_comparison.csv` vs `e4_policy_comparison_event.csv` | `experiments/ns3_e1/run_e3.py`, `run_trackc_c3.py`, `run_e4e5.py` + `run_trackc_c4.py` | Fig. 4 reports the corrected (event-driven) numbers |
-| 20 | Loss-free cohort completion (Theorem 2 adjudication) | exhaustive K = 1..38 simultaneous cohorts, q = 7: per-session max elapsed 40 cycles = D_g exactly (zero margin) on the paper's 39-window timeline, first attained at K = 26; 39 cycles on the engine timeline; 0 violations — deterministic loss-free dynamics make the sweep a complete case analysis | `results/theorem2_completion.csv` | `experiments/analysis/run_theorem2_adjudication.py` (discipline port: `theorem2_adjudication.py`, verified against `e2_sim` capMode 2: completion indices 32/34/36/37 at K = 1/4/8/16) | q = 7, cap 0, all admitted at cycle 0 |
-| 21 | Loss-aware credits are provisioning values, not a worst-case completion guarantee | staggered lossless admission (1/cycle, K = 15): 42 cycles (39-window timeline) / 41 (engine) > D_g — the cohort premise is necessary; q_wc = 19/cap 2 within-cap cohort counterexample (one session cap-maxed, demand 723 ≤ 729): 41 cycles > D_g on both timelines; q_wc = 25/cap 3: no violation in the 994-configuration cohort-scoped search, maxima 40 (39-window) / 39 (engine) — a search result, not a proof | `results/theorem2_adversarial.csv`, `results/theorem2_counterexample_traces.txt` | `experiments/analysis/run_theorem2_adjudication.py` | fixed failure families + `random.Random(7)` sweep (40 patterns/K, K ∈ {1..16, 20, 24, 30, 35}) |
+| 20 | Loss-free cohort completion (Theorem 2 adjudication) | exhaustive K = 1..38 simultaneous cohorts, q = 7: per-session max elapsed 38 cycles ≤ D_g = 40 (2-cycle margin) on the paper's 39-window timeline, first attained at K = 21 (full argmax set {21, 22, 25, 26, 27, 28, 29, 31, 32, 33, 34, 35, 36, 38}); 37 cycles on the engine timeline; 0 violations — deterministic loss-free dynamics make the sweep a complete case analysis | `results/theorem2_completion.csv` | `experiments/analysis/run_theorem2_adjudication.py` (discipline port: `theorem2_adjudication.py`; on the ns-3 cross-check see the divergence note below the findings) | q = 7, cap 0, all admitted at cycle 0 |
+| 21 | Loss-aware credits are provisioning values, not a worst-case completion guarantee | on the corrected 19-message sequence the former counterexamples dissolve: staggered lossless admission (1/cycle, K = 15) completes at 36 (39-window timeline) / 35 (engine) cycles, formerly 42 / 41 > D_g on the superseded 20-message sequence; the q_wc = 19/cap 2 within-cap cohort pattern (one session cap-maxed, demand 690 ≤ C_wc = 707) completes at 40 cycles = D_g exactly (39-window; 39 engine) — no violation; q_wc = 25/cap 3: no violation in the cohort-scoped search (994 configurations per (q, cap) × timeline sweep), maxima 38 (39-window) / 37 (engine) — a search result, not a proof | `results/theorem2_adversarial.csv`, `results/theorem2_counterexample_traces.txt` | `experiments/analysis/run_theorem2_adjudication.py` | fixed failure families + `random.Random(7)` sweep (40 patterns/K, K ∈ {1..16, 20, 24, 30, 35}) |
+| 22 | Staggered admission: pre-declared exhaustive search finds no D_g violation | K = 2..38 × period p ∈ {1, 2, 3, 5} × (q, cap) ∈ {(7, 0), (19, 2), (25, 3)} × both timelines = 6,184 deterministic configurations, horizon 400 cycles: violations 0; maxima on the 39-window timeline 40 cycles (q_wc = 19, = D_g, no violation), 39 (q_wc = 25), 38 (loss-free q = 7, at K = 29, p = 1); one cycle less on the engine timeline | `results/theorem2_staggered.csv` | `experiments/analysis/staggered_search.py` | fixed failure families, no RNG, within-cap filter C_wc ∈ {247, 707, 937} |
 
 ## Release-aware credit requirement (`release_aware_credit.csv`)
 
 Theorem 2's aggregate-workload argument is refined by a release-aware
-check: at every release point i of the 20-message sequence (verbatim from
-the replay table; sum 241 slots, releases 0..775 ms),
+check: at every release point i of the 19-message sequence (the
+corrected sequence of `theorem2_adjudication.py`; sum 230 slots,
+releases 0..775 ms),
 q_req(i) = ceil(C_i^rem / nu_i), where C_i^rem is the remaining
 worst-case airtime (envelope remainder plus n_r retransmissions of the
 remaining messages) and nu_i = 39 - floor(r_i / 50 ms) is the number of
 remaining service windows before D_g = 40T (40 cycles minus the excluded
 joining cycle). Results (`experiments/layer1/release_aware_credit.py`):
-q_req = max_i q_req(i) = **7** (lossless), **19** (n_r = 2), **25**
+q_req = max_i q_req(i) = **6** (lossless), **19** (n_r = 2), **25**
 (n_r = 3), each attained at the first release point (SLAC_PARM.REQ,
 r = 0) — the release structure does not raise the credit requirement
-beyond the aggregate values. Side identities: ceil((247 + 2*241)/39) = 19,
-ceil((247 + 3*241)/39) = 25. The cycle counts ceil(729/19)+1 = 40,
-ceil(970/25)+1 = 40, ceil(247/7)+1 = 37 are entitlement-coverage
+beyond the aggregate values; the lossless release maximum 6 sits below
+the provisioned q = ceil(247/39) = 7, which is set by the envelope
+rather than the release schedule. Side identities:
+ceil((247 + 2*230)/39) = 19,
+ceil((247 + 3*230)/39) = 25. The cycle counts ceil(707/19)+1 = 39,
+ceil(937/25)+1 = 39, ceil(247/7)+1 = 37 are entitlement-coverage
 arithmetic (service windows needed plus the joining cycle), not
 completion guarantees; adjudicated completion behavior is recorded in
-`theorem2_completion.csv` / `theorem2_adversarial.csv` (claims #20–21).
+`theorem2_completion.csv` / `theorem2_adversarial.csv` / `theorem2_staggered.csv` (claims #20–22).
 
 ## Theorem 2 completion adjudication (`theorem2_completion.csv`, `theorem2_adversarial.csv`)
 
@@ -57,8 +62,8 @@ exact committed credit discipline (capMode 2: per-session signed credit,
 aggregate allowance = q·K_active − debt, non-preemptive straddle → debt,
 persistent service pointer = first blocked session). The checker
 (`experiments/analysis/theorem2_adjudication.py`) is an RNG-free port
-verified against the committed `e2_sim` engine (completion cycle indices
-32/34/36/37 at K = 1/4/8/16, q = 7, PER = 0, capMode 2); the adversary
+of the committed discipline, running the corrected 19-message / 230-slot
+SLAC sequence; the adversary
 chooses every retry outcome (≤ cap per message), admission offsets, and
 session order. Two timeline conventions are reported: **39-window** (the
 paper's credit derivation — no credit or service in the joining cycle)
@@ -69,22 +74,38 @@ Findings (`experiments/analysis/run_theorem2_adjudication.py`):
 1. **Loss-free simultaneous cohorts complete** (claim #20): exhaustive
    execution of all cohort sizes K = 1..38 — loss-free dynamics are
    deterministic per K, so the sweep is a complete case analysis —
-   bounds per-session completion at **40 cycles = D_g exactly** (zero
-   margin, first attained at K = 26) on the 39-window timeline, 39 on
+   bounds per-session completion at **38 cycles ≤ D_g = 40** (2-cycle
+   margin, first attained at K = 21) on the 39-window timeline, 37 on
    the engine timeline, with zero violations.
-2. **The cohort premise is necessary**: staggered admission (one
-   session per cycle, K = 15) violates D_g with **no losses at all**
-   (42 / 41 cycles). Mechanism: as earlier sessions complete, the
-   aggregate window quota q·K_active contracts, so service deferred
-   during the crowded phase can lack the supply to be recovered.
+2. **The former staggered counterexample dissolves on the corrected
+   sequence**: staggered admission (one session per cycle, K = 15)
+   completes at 36 / 35 cycles (formerly 42 / 41 > D_g on the
+   superseded 20-message sequence). A pre-declared exhaustive
+   staggered search (claim #22: K = 2..38, p ∈ {1, 2, 3, 5}, all three
+   design points, both timelines, 6,184 configurations) finds **no
+   D_g violation**; the quota-contraction mechanism (as earlier
+   sessions complete, the aggregate window quota q·K_active
+   contracts) remains present but no longer produces a violation
+   within the searched space.
 3. **Entitlement coverage is not a worst-case service guarantee**
    (claim #21): at q_wc = 19/cap 2 a within-cap simultaneous-cohort
-   pattern (one session cap-maxed, demand 723 ≤ C_wc = 729) completes
-   at 41 cycles > D_g; at q_wc = 25/cap 3 the cohort-scoped search
-   finds no violation (maxima 40 / 39) — a search result, not a proof.
+   pattern (one session cap-maxed, demand 690 ≤ C_wc = 707) completes
+   at 40 cycles = D_g exactly — the bound is reached but not
+   exceeded; at q_wc = 25/cap 3 the cohort-scoped search
+   finds no violation (maxima 38 / 37) — a search result, not a proof.
 4. All committed experiment observations are unaffected: the evaluated
    workloads admit sessions in simultaneous bursts, and their recorded
    zero-violation counts (claims #9, #17) remain exact observations.
+
+Divergence note (ns-3 tiers): the ns-3 tiers
+(`ns3/standalone/loss_sim.cc`, `ns3/contrib/ev-plc-transition`) retain
+the superseded 20-message / 241-slot sequence. They are not on the
+Theorem 2 adjudication path, which is served entirely by the Python
+discipline port. The slot-exact cross-check between the port and
+`e2_sim` capMode 2 (completion indices 32/34/36/37 at K = 1/4/8/16,
+q = 7, PER = 0) was established on the 20-message sequence and does not
+hold across the corrected port (19-message indices: 31/33/34/34).
+Re-running the ns-3 tiers on the corrected sequence is deferred.
 
 The committed e2 CSVs carry no completion-cycle column and the engine's
 violation counter tests only elapsed ≥ 40 cycles, so sub-deadline
