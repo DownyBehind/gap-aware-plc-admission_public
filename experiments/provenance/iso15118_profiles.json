@@ -1,0 +1,89 @@
+{
+  "_comment": "ISO 15118-2:2014 CurrentDemand reference profiles encoded for the airtime provenance check (docs/model/iso15118_airtime_provenance.md). EXI is value-dependent; every enabled field and its value is recorded here. These are reference profiles, not universal protocol maxima.",
+  "encoder": {
+    "library": "EVerest libcbv2g",
+    "commit": "03350be048b35b179905129005a97144a4bdcf93",
+    "schema": "urn:iso:15118:2:2013:MsgDef (ISO 15118-2:2014 Ed.1 XSD, cbexigen-generated codec)",
+    "harness": "experiments/provenance/encode_currentdemand.c",
+    "validation": "the CurrentDemandReq core profile reproduces the EXI stream of ISO 15118-2:2014 Annex D.2.3 (V2G message example 15) byte-for-byte: 25 bytes, 8098020C0C4C8CCD0D4D8DD0D1001B8186078410C40C203000"
+  },
+  "header": { "SessionID_hex": "3031323334353637" },
+  "profiles": [
+    {
+      "message": "CurrentDemandReq",
+      "profile": "core",
+      "source": "ISO 15118-2:2014 Annex D.2.3 example values; mandatory fields only",
+      "fields": {
+        "DC_EVStatus": { "EVReady": true, "EVErrorCode": "NO_ERROR", "EVRESSSOC": 55 },
+        "EVTargetCurrent": { "Multiplier": 0, "Unit": "A", "Value": 60 },
+        "ChargingComplete": false,
+        "EVTargetVoltage": { "Multiplier": 0, "Unit": "V", "Value": 450 }
+      },
+      "exi_bytes": 25
+    },
+    {
+      "message": "CurrentDemandReq",
+      "profile": "conservative",
+      "source": "core plus every schema-optional element of CurrentDemandReqType",
+      "fields": {
+        "DC_EVStatus": { "EVReady": true, "EVErrorCode": "NO_ERROR", "EVRESSSOC": 55 },
+        "EVTargetCurrent": { "Multiplier": 0, "Unit": "A", "Value": 60 },
+        "EVMaximumVoltageLimit": { "Multiplier": 0, "Unit": "V", "Value": 1000 },
+        "EVMaximumCurrentLimit": { "Multiplier": 0, "Unit": "A", "Value": 400 },
+        "EVMaximumPowerLimit": { "Multiplier": 3, "Unit": "W", "Value": 350 },
+        "BulkChargingComplete": false,
+        "ChargingComplete": false,
+        "RemainingTimeToFullSoC": { "Multiplier": 0, "Unit": "s", "Value": 28800 },
+        "RemainingTimeToBulkSoC": { "Multiplier": 0, "Unit": "s", "Value": 14400 },
+        "EVTargetVoltage": { "Multiplier": 0, "Unit": "V", "Value": 450 }
+      },
+      "exi_bytes": 48
+    },
+    {
+      "message": "CurrentDemandRes",
+      "profile": "core",
+      "source": "mandatory fields only (no EXI example exists in Annex D for this message)",
+      "fields": {
+        "ResponseCode": "OK",
+        "DC_EVSEStatus": { "NotificationMaxDelay": 0, "EVSENotification": "None", "EVSEStatusCode": "EVSE_Ready" },
+        "EVSEPresentVoltage": { "Multiplier": 0, "Unit": "V", "Value": 450 },
+        "EVSEPresentCurrent": { "Multiplier": 0, "Unit": "A", "Value": 60 },
+        "EVSECurrentLimitAchieved": false,
+        "EVSEVoltageLimitAchieved": false,
+        "EVSEPowerLimitAchieved": false,
+        "EVSEID": "FRA23E45B78C",
+        "SAScheduleTupleID": 1
+      },
+      "exi_bytes": 42
+    },
+    {
+      "message": "CurrentDemandRes",
+      "profile": "conservative",
+      "source": "core plus every schema-optional element of CurrentDemandResType and of its MeterInfo/DC_EVSEStatus members",
+      "fields": {
+        "ResponseCode": "OK",
+        "DC_EVSEStatus": { "NotificationMaxDelay": 0, "EVSENotification": "None", "EVSEIsolationStatus": "Valid", "EVSEStatusCode": "EVSE_Ready" },
+        "EVSEPresentVoltage": { "Multiplier": 0, "Unit": "V", "Value": 450 },
+        "EVSEPresentCurrent": { "Multiplier": 0, "Unit": "A", "Value": 60 },
+        "EVSECurrentLimitAchieved": false,
+        "EVSEVoltageLimitAchieved": false,
+        "EVSEPowerLimitAchieved": false,
+        "EVSEMaximumVoltageLimit": { "Multiplier": 0, "Unit": "V", "Value": 1000 },
+        "EVSEMaximumCurrentLimit": { "Multiplier": 0, "Unit": "A", "Value": 400 },
+        "EVSEMaximumPowerLimit": { "Multiplier": 3, "Unit": "W", "Value": 350 },
+        "EVSEID": "FRA23E45B78C",
+        "SAScheduleTupleID": 1,
+        "MeterInfo": {
+          "MeterID": "DE0000000000000000000000000MTR01",
+          "MeterReading": 123456789012,
+          "SigMeterReading_bytes": 64,
+          "SigMeterReading_fill": "0xAB",
+          "MeterStatus": 1,
+          "TMeter": 1774000000
+        },
+        "ReceiptRequired": true
+      },
+      "exi_bytes": 169
+    }
+  ]
+}

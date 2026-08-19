@@ -1,6 +1,6 @@
 # gap-aware-plc-admission_public
 
-> Submission snapshot for ICIT 2027 — tag `icit27-submission-v5`.
+> Submission snapshot for ICIT 2027 — tag `icit27-submission-v6`.
 > This is the artifact repository cited by the paper's Sec. V footnote.
 
 Artifact for the ICIT 2027 submission.
@@ -11,6 +11,8 @@ corresponding to the submitted paper.
 Start here:
 [`docs/PARAMETER_PROVENANCE.md`](docs/PARAMETER_PROVENANCE.md),
 [`results/RESULTS.md`](results/RESULTS.md).
+Parameter provenance and ISO 15118-2 CurrentDemand airtime calibration:
+[`docs/model/iso15118_airtime_provenance.md`](docs/model/iso15118_airtime_provenance.md).
 
 > The event-driven tier is a custom frame/slot-level error-channel model, not a HomePlug OFDM PHY implementation.
 > The per-link attenuation and Gilbert–Elliott settings are controlled

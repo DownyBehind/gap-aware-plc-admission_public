@@ -24,9 +24,9 @@ Reproduction targets for every reported result are indexed in
 |---|---:|---|---|
 | Δ | 35.84 µs | slot duration | standard |
 | T | 1395 slots (~50 ms) | control period | assumption |
-| C_req | 15 slots | DC request airtime | reference-profile assumption |
+| C_req | 15 slots | DC request airtime | conservative analysis bound; encoded ISO 15118-2 CurrentDemandReq reference profiles remain within it (docs/model/iso15118_airtime_provenance.md) |
 | C_proc | 280 slots (~10 ms) | response-ready processing latency | assumption |
-| C_res | 21 slots | DC response airtime | reference-profile assumption |
+| C_res | 21 slots | DC response airtime | conservative analysis bound; encoded ISO 15118-2 CurrentDemandRes reference profiles remain within it (docs/model/iso15118_airtime_provenance.md) |
 | D_g | 40T (~2 s) | admitted-session deadline | design assumption |
 | Σℓ_i | 230 slots | sum of the 19-message table (Appendix A of the paper); the demand the replay tiers play | derived from reference sequence |
 | C_slac | 247 slots | per-session provisioning budget of the coordinated scheduler (reserved and served per session by the reserving lineage and the ns-3 session model) | architecture parameter (ARCH) |
@@ -68,14 +68,21 @@ to 0.
 
 The paper evaluates fixed slot-level airtimes
 `C_req = 15` and `C_res = 21`.
-They are reference-profile inputs, not claimed as uniquely determined HPGP PHY
-airtimes.
+They are conservative analysis bounds of the reference profile, not claimed
+as uniquely determined HPGP PHY airtimes. The EXI-payload side of both
+bounds is validated against encoded ISO 15118-2 reference profiles
+(EVerest libcbv2g; the CurrentDemandReq core profile reproduces the ISO
+15118-2:2014 Annex D.2.3 EXI example byte-for-byte): every evaluated
+reference encoding remains within the published bounds at both R = 10 Mbps
+and R = 9.8452 Mbps. See docs/model/iso15118_airtime_provenance.md and
+`experiments/analysis/iso15118_airtime_check.py`. This is a
+reference-profile validation, not a universal protocol maximum.
 
 A provisional byte-to-airtime conversion used during model construction is
 recorded below for transparency, but the paper's guarantees apply to the
 resulting slot values rather than to this provisional PHY conversion.
 
-### Provisional construction record
+### Provisional construction record (historical)
 
 ```
 airtime = frame bytes × 8 / 10 Mbps + 350 µs overhead
@@ -84,10 +91,20 @@ C_req   : 82 + EXI 150 = 232 B → 185.6 + 350 = 535.6 µs → 15 slots
 C_res   : 82 + EXI 380 = 462 B → 369.6 + 350 = 719.6 µs → 21 slots
 ```
 
+The earlier 150/380-B construction values are retained only as
+historical model-construction notes and are not used as protocol-size
+claims. The encoded reference profiles (25–48 B for CurrentDemandReq,
+42–169 B for CurrentDemandRes) sit well inside the pass lines of the
+bounds (L_EXI ≤ 152/421 B at 10 Mbps).
+
 ### Calibration limits
 
-- The EXI payload sizes 150 B and 380 B are model assumptions; no measured
-  encoding-size trace is claimed.
+- The EXI byte counts cover the stated reference profiles only; EXI is
+  value- and option-dependent, so they are not a universal maximum over
+  all schema-valid CurrentDemand messages.
+- The stack overhead L_stack = 82 B (Eth 14 + IPv6 40 + TCP 20 + V2GTP 8)
+  remains a construction assumption: TCP options and VLAN tagging are not
+  modeled.
 - The 10-Mbps rate is a rounded construction value. Using the exact
   HPGP HS-ROBO_AV rate of 9.8452 Mbps (HPGP Spec Table 3-13) can move the
   request across a slot boundary: it gives C_req = 16 (538.5 µs, 0.9 µs past

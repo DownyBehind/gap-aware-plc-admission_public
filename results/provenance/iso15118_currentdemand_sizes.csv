@@ -1,0 +1,5 @@
+message,profile,encoder,encoder_commit,schema,exi_bytes
+CurrentDemandReq,core,EVerest-libcbv2g,03350be048b35b179905129005a97144a4bdcf93,urn:iso:15118:2:2013:MsgDef,25
+CurrentDemandReq,conservative,EVerest-libcbv2g,03350be048b35b179905129005a97144a4bdcf93,urn:iso:15118:2:2013:MsgDef,48
+CurrentDemandRes,core,EVerest-libcbv2g,03350be048b35b179905129005a97144a4bdcf93,urn:iso:15118:2:2013:MsgDef,42
+CurrentDemandRes,conservative,EVerest-libcbv2g,03350be048b35b179905129005a97144a4bdcf93,urn:iso:15118:2:2013:MsgDef,169

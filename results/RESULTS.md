@@ -321,3 +321,26 @@ The replay tier (`loss_sim`) already used this aggregate-debt discipline
 and is byte-identical before/after (regression-checked); the reserving
 and analytic tiers are untouched (e5, knee, admission-region CSVs
 byte-identical).
+
+## ISO 15118-2 airtime provenance check
+
+Reference-profile calibration of the DC frame bounds (not a headline
+claim; claim numbers above are unchanged). Encoded ISO 15118-2
+CurrentDemandReq/Res reference profiles (EVerest libcbv2g, commit
+`03350be0`; the Req core profile reproduces the ISO 15118-2:2014
+Annex D.2.3 EXI example byte-for-byte) converted with
+`slots = ceil((350 µs + 8(L_EXI + 82 B)/R)/35.84 µs)`:
+
+| message | profile | EXI B | slots @10 Mbps | slots @9.8452 Mbps | bound |
+|---|---|---:|---:|---:|---:|
+| CurrentDemandReq | core | 25 | 13 | 13 | 15 |
+| CurrentDemandReq | conservative | 48 | 13 | 13 | 15 |
+| CurrentDemandRes | core | 42 | 13 | 13 | 21 |
+| CurrentDemandRes | conservative | 169 | 16 | 16 | 21 |
+
+All evaluated reference encodings remain within the published analysis
+bounds. No numeric result in the paper changes.
+Inputs: `experiments/provenance/iso15118_profiles.json` · sizes:
+`results/provenance/iso15118_currentdemand_sizes.csv` · check:
+`experiments/analysis/iso15118_airtime_check.py` · full record:
+`docs/model/iso15118_airtime_provenance.md`.
