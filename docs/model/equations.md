@@ -103,8 +103,27 @@ envelope's six-slot excess)
 `W_exp(p) = C_slac / (1 - p)`
 
 Budgets over 39 service windows (of the ceil(D_g/T) = 40 cycles a session may
-span, the joining cycle carries no credit): `q_wc(p) = ceil(C_wc / 39)`,
-`q_exp(p) = ceil(W_exp / 39)`.
+span, the joining cycle carries no credit): the credit rule is
+
+`q(C) = min{ q : ceil(C/q) <= 39 } = ceil(C / 39)`
+
+— the least per-cycle credit whose provisioned airtime fits in the 39
+service windows a session has before D_g. Applied to the three design
+points:
+
+| budget C | credit | one step below |
+|---|---|---|
+| C_slac = 247 | q = 7 | q = 6 would need ceil(247/6) = 42 windows > 39 |
+| C_wc = 707 (cap 2) | q_wc = 19 | 18 would need 40 windows |
+| C_wc = 937 (cap 3) | q_wc = 25 | 24 would need 40 windows |
+
+Entitlement coverage is a consequence, not a rule input:
+ceil(247/7)+1 = 37 cycles (D_g = 40), ceil(707/19)+1 = 39,
+ceil(937/25)+1 = 39. One credit step below each design point the
+entitlement reaches 40 cycles or more; independently, exhaustive
+loss-free execution at q = 6 reaches 45 cycles and violates D_g for
+every K >= 4 (`experiments/analysis/credit_rule_check.py`).
+`q_exp(p) = ceil(W_exp / 39)` follows the same rule.
 
 | p | n_r (eps=1e-6) | C_wc | q_wc | W_exp | q_exp |
 |---|---|---|---|---|---|

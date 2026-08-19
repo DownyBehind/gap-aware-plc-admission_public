@@ -10,8 +10,8 @@ script/configuration that produces it. All runs are deterministic
 |---|---|---|---|---|---|
 | 1 | Layer-1 knee positions (Table I, IFS=0 row) | {18, 17, 15, 11} for K ∈ {1, 4, 8, 16}, zero tolerance | `results/layer1/knee_verification.csv` | `experiments/layer1/verify_knee_e1.py` | N = 1..40 |
 | 2 | Contention baseline DC deadline miss at (N₀=30, K=0) | 93.08% (67,018 / 72,000) | `results/ns3_e1/e4_csma_single_cell_30_0.csv` | `trackc-e4-csma --singleN0=30 --singleK=0 --perPpm=1000 --seeds=20 --horizon=120` | 20 seeds, 30 EVs × 120 cycles |
-| 3 | Burst effect on DC miss (Table II; unified accounting, slack-resolved) | boundary (37,1): i.i.d. 814/10,000 = 8.14e-2, G-E worst 779/10,000 = 7.79e-2 (ratio 0.96); maximum defined ratio 81.5× at (36,1), sojourn 300, per_bad 0.05 (163/10,000 vs 2/10,000); some cells have i.i.d. 0 but burst > 0 | `results/ns3_e1/g3_burst_vs_iid.csv`, `results/ns3_e1/g3i_iid_baseline.csv`, `results/ns3_e1/g3c_burst_sensitivity.csv` | `experiments/ns3_e1/run_g3_burst_vs_iid.py` (`trackc-g3 --mode=i/c --cells=…`) | 13 cells over the envelope-slack spectrum × 12 G-E points, marginal slot-PER 6.7e-5 held, 20 seeds |
-| 4 | Per-link service credit cuts SEVERE-link deadline violations | uniform credit 139/800 = 17.375% (CP95 [14.81%, 20.18%]) vs. per-link credit 7/800 = 0.875% (CP95 [0.35%, 1.79%]); Fisher exact p = 1.5e-35; per-seed median 0 across 100 seeds (per-link arm); seed-level bootstrap95 uniform [15.25%, 19.63%], per-link [0.25%, 1.63%]; GOOD-link violations 0/800 in both arms | `results/ns3_e1/perlink_uniform_per_seed.csv`, `perlink_perlink_per_seed.csv`, `perlink_summary.csv` (20-seed subset: `g3b_link_aware.csv`) | `trackc-g3 --mode=b --seeds=100 --aggCap=1` (`run_trackc_c4.py` runs the 20-seed subset) | N₀=10, K=16, half GOOD / half SEVERE, SEVERE PER 1e-2; **100 seeds for the per-link comparison; 20 seeds elsewhere** |
+| 3 | Burst effect on DC miss (Table II; unified accounting, slack-resolved) | boundary (37,1): i.i.d. 814/10,000 = 8.14e-2, G-E worst 779/10,000 = 7.79e-2 (ratio 0.96); maximum defined ratio 81.5× at (36,1), sojourn 300, per_bad 0.05 (163/10,000 vs 2/10,000); some cells have i.i.d. 0 but burst > 0; budget-consumption lineage — sessions serve the C_slac = 247 provisioning budget (`SlacSession`), not the message table | `results/ns3_e1/g3_burst_vs_iid.csv`, `results/ns3_e1/g3i_iid_baseline.csv`, `results/ns3_e1/g3c_burst_sensitivity.csv` | `experiments/ns3_e1/run_g3_burst_vs_iid.py` (`trackc-g3 --mode=i/c --cells=…`) | 13 cells over the envelope-slack spectrum × 12 G-E points, marginal slot-PER 6.7e-5 held, 20 seeds |
+| 4 | Per-link service credit cuts SEVERE-link deadline violations | uniform credit 139/800 = 17.375% (CP95 [14.81%, 20.18%]) vs. per-link credit 7/800 = 0.875% (CP95 [0.35%, 1.79%]); Fisher exact p = 1.5e-35; per-seed median 0 across 100 seeds (per-link arm); seed-level bootstrap95 uniform [15.25%, 19.63%], per-link [0.25%, 1.63%]; GOOD-link violations 0/800 in both arms; message-table replay lineage — retransmissions re-consume the actual message airtime (`ev-plc-policy-mac.cc:638-651`) | `results/ns3_e1/perlink_uniform_per_seed.csv`, `perlink_perlink_per_seed.csv`, `perlink_summary.csv` (20-seed subset: `g3b_link_aware.csv`) | `trackc-g3 --mode=b --seeds=100 --aggCap=1` (`run_trackc_c4.py` runs the 20-seed subset) | N₀=10, K=16, half GOOD / half SEVERE, SEVERE PER 1e-2; **100 seeds for the per-link comparison; 20 seeds elsewhere** |
 | 5 | SEVERE-link session violation share under count-based admission | 17.375% (139 / 800) | `results/ns3_e1/perlink_uniform_per_seed.csv` | same as #4 | same as #4 |
 | 6 | Tightest admitted state finish | 1389 / 1395 slots (slack 6) at (38, 0) | `results/ns3_e1/e5_adversarial.csv`, `results/layer1/admission_region.csv` | `experiments/ns3_e1/run_e4e5.py` (e5), `experiments/layer1/sweep_admission_region.py` | adversarial carry-in realization |
 | 7 | Naive-bound counterexample finish | 1402 slots at (37, 4) — analytic value, not a measurement | formula | `src/formulas/transition_formulas.py` (`F_active_state`) | max(555+28+21, 295) + 777 + 21 |
@@ -47,8 +47,10 @@ q_req = max_i q_req(i) = **6** (lossless), **19** (n_r = 2), **25**
 (n_r = 3), each attained at the first release point (SLAC_PARM.REQ,
 r = 0) — the release structure does not raise the credit requirement
 beyond the aggregate values; the lossless release maximum 6 sits below
-the provisioned q = ceil(247/39) = 7, which is set by the envelope
-rather than the release schedule. Side identities:
+the provisioned q = 7 = min{q : ceil(C_slac/q) <= 39} = ceil(247/39) —
+the least credit whose provisioned airtime fits in the 39 service
+windows before D_g — which is set by the provisioning budget rather
+than the release schedule. Side identities:
 ceil((247 + 2*230)/39) = 19,
 ceil((247 + 3*230)/39) = 25. The cycle counts ceil(707/19)+1 = 39,
 ceil(937/25)+1 = 39, ceil(247/7)+1 = 37 are entitlement-coverage
@@ -160,6 +162,20 @@ i.i.d. count is 0 but the burst count is not. `envelope_slack_slots` =
 single-retransmission unit of 21 slots. Cross-check: at (37,1) the i.i.d.
 measurement 8.14e-2 agrees with the analytic single-error envelope
 1 − (1−6.7e-5)^1332 ≈ 8.5e-2 (1332 = exposed REQ+RES slots).
+
+## Artefact lineages (which experiment consumes what)
+
+Three lineages, not two (see `docs/model/slac_sequence_model.md`):
+
+| Lineage | SLAC representation | Artefacts |
+|---|---|---|
+| Message-table replay | 19-message table, Σℓ = 230; retries replay actual message airtime | `perlink_*_per_seed.csv`, `g3b_link_aware.csv`, `g3a_qwc_burst.csv`, `e4_policy_comparison{,_event}.csv`, `e4_policy_counts.csv`, `e4_slack_occupancy.csv`, `e4_ablation_condA_only.csv`, `e4_csma_*`, `e2_admission_variants.csv`, `loss_knee.csv`, `replay_knee_*.csv`, `thm1_cell_trace*.csv`, `theorem2_*.csv`, `release_aware_credit.csv` |
+| Budget consumption | opaque per-session budget C_slac = 247 (`SlacSession`) | `g3i_iid_baseline.csv`, `g3c_burst_sensitivity.csv`, `g3_burst_vs_iid.csv` (Table II), `parity_knee.csv` |
+| Reservation arithmetic | aggregate window q·K (+ guards), no per-session playback | `knee_verification.csv`, `overhead_knee.csv` (Table I), `e5_adversarial.csv` |
+
+The budget-consumption lineage never touches the message table, which
+is why its artefacts were bit-identical across the 19-message sequence
+correction.
 
 ## q settings per experiment (`Q_SETTINGS.csv`)
 

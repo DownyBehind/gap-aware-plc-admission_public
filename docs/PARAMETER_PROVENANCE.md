@@ -5,7 +5,9 @@ records the provenance of its numerical inputs.
 
 Each value is classified as one of:
 **standard**, **derived**, **measured**, **assumption**,
-**stress parameter**, or **experiment setting**.
+**architecture parameter (ARCH)** — a design parameter of the
+coordinated scheduler itself, in the same category as q, B_pkt and
+D_g —, **stress parameter**, or **experiment setting**.
 
 The analytical guarantees in the paper are exact for the stated slot-level
 reference profile and MAC assumptions. Values classified as assumptions are
@@ -26,8 +28,8 @@ Reproduction targets for every reported result are indexed in
 | C_proc | 280 slots (~10 ms) | response-ready processing latency | assumption |
 | C_res | 21 slots | DC response airtime | reference-profile assumption |
 | D_g | 40T (~2 s) | admitted-session deadline | design assumption |
-| Σℓ_i | 230 slots | modeled 19-message SLAC sequence demand | derived from reference sequence |
-| C_slac | 247 slots | provisioned SLAC session budget | design budget |
+| Σℓ_i | 230 slots | sum of the 19-message table (Appendix A of the paper); the demand the replay tiers play | derived from reference sequence |
+| C_slac | 247 slots | per-session provisioning budget of the coordinated scheduler (reserved and served per session by the reserving lineage and the ns-3 session model) | architecture parameter (ARCH) |
 | B_blk | 21 slots | cycle-head non-preemptive carry-in bound | derived from reference profile |
 | B_pkt | 21 slots | in-map non-preemptive packet guard | derived from reference profile |
 | B_str | 17 slots | SLAC-only straddling bound | derived |
@@ -110,20 +112,27 @@ reference-profile inputs rather than measured PHY airtimes.
 |---|---|---|---|---|
 | ℓ_i (19 messages) | 11–18 slots | reference-profile constants | `experiments/analysis/theorem2_adjudication.py` (`SEQ`, the canonical sequence table); message set fixed by direct comparison against ISO 15118-3:2015 Annex A (Table A.1 `C_EV_start_atten_char_inds` = 3, Table A.4 MME set, Figure A.1) | fixed model constants; not claimed as measured PHY airtimes |
 | Σ ℓ_i | 230 slots | derived | — | 5×11 + 10×12 + 18 + 12 + 12 + 13 |
-| C_slac | 247 slots | provisioned design budget | see note | provisioned budget — see note |
+| C_slac | 247 slots | architecture parameter (ARCH) | scheduler design parameter — see note | per-session provisioning budget reserved and served by the coordinated scheduler (`ns3/contrib/ev-plc-transition/model/slac-session.cc`); not a protocol-derived size, not standards-derived |
 | sequence structure (19 msgs) | — | standard | ISO 15118-3 Annex A.9 (matching process) | — |
 | release schedule (0–775 ms) | — | model constants consistent with ISO 15118-3 Annex A Table A.1 timers | see release note | — |
 | B_str | 17 slots | derived | — | max ℓ_i − 1 = 18 − 1 |
 
-C_slac note: `C_slac = 247` is a provisioned design budget around the
-modeled 230-slot sequence. The seventeen-slot reserve is not
-standards-derived, and after the sequence correction it is
-**load-bearing** for the published credits: replacing 247 by the bare
-sum 230 **changes both q and q_wc**
-(⌈230/39⌉ = 6; 230+2·230 = 690 → 18; 230+3·230 = 920 → 24, versus the
-published 7 / 19 / 25). The repository retains `C_slac = 247` as the
-provisioning constant. In the evaluated grid,
-realized demand did not exceed the provisioned budget.
+C_slac note: `C_slac = 247` is the per-session provisioning budget of
+the coordinated scheduler — the amount the reserving lineage and the
+ns-3 session model actually reserve and serve per session — not a claim
+about ISO message sizes. The budget is load-bearing but its admissible
+range is bounded. The
+credit rule is q = min{q : ceil(C/q) <= 39}, the least per-cycle credit
+whose provisioned airtime fits in the 39 service windows a session has
+before D_g; this is exactly ceil(C/39). Every budget in [247, 273]
+yields the same credits (7, 19, 25). Below 235 the loss-blind credit
+falls to q = 6, under which exhaustive execution of the loss-free
+cohorts reaches 45 cycles and violates D_g for every K >= 4; the
+completion guarantee therefore requires q >= 7. Above 273 the loss-blind
+credit rises to q = 8 and moves the admission boundary. What is not
+derived is the position of 247 within [247, 273]
+(verification: `experiments/analysis/credit_rule_check.py`). In the
+evaluated grid, realized demand did not exceed the provisioned budget.
 
 ℓ_i note: `CM_ATTEN_CHAR.IND` has a variable-length attenuation-profile
 payload in the specification. The 18-slot value is therefore part of the
@@ -170,12 +179,12 @@ value, B_str is tight in scope.
 
 | Symbol | Value | Type | Derivation |
 |---|---|---|---|
-| q | 7 | derived | ⌈C_slac / 39⌉ = ⌈247/39⌉ |
+| q | 7 | derived | min{q : ⌈C_slac/q⌉ ≤ 39} = ⌈C_slac/39⌉ — least credit whose provisioned airtime fits in the 39 service windows before D_g; q = 6 would need 42 windows |
 | 39 (service windows) | — | derived | ⌈D_g/T⌉ − 1 = 40 − 1 (the joining cycle carries no credit) |
 | ε | 10⁻⁶ | design target | target retry-cap-exceedance probability under the independent-attempt union-bound model |
 | n_r (retry cap) | 2 / 3 | derived | least integer with 19·p^(n_r+1) ≤ ε at p = 10⁻³ / 10⁻² |
 | C_wc | 707 / 937 | derived | C_slac + n_r · Σℓ_i |
-| q_wc | 19 / 25 | derived | ⌈C_wc / 39⌉ |
+| q_wc | 19 / 25 | derived | min{q : ⌈C_wc/q⌉ ≤ 39} = ⌈C_wc/39⌉ — 19 at cap 2 (18 would need 40 windows), 25 at cap 3 (24 would need 40) |
 
 ## 6. Channel / loss parameters
 
