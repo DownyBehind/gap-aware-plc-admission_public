@@ -40,12 +40,12 @@ def q_wc(p: float, w: int = 247) -> tuple[int, int]:
     # is the least integer with 20 * p**(n_r + 1) <= EPS. The closed form
     # below lands on the same integer over the supported p range; assert it.
     n_r = ceil(log(EPS) / log(p))
-    n_union = next(n for n in range(64) if 20 * p ** (n + 1) <= EPS)
+    n_union = next(n for n in range(64) if 19 * p ** (n + 1) <= EPS)
     assert n_r == n_union, f"retry caps disagree: {n_r} != {n_union} at p={p}"
-    # Worst-case airtime C_wc = C_slac + n_r * 241: first transmissions at the
-    # envelope (247), retries at the measured airtime sum (241); 39 service
+    # Worst-case airtime C_wc = C_slac + n_r * 230: first transmissions at the
+    # envelope (247), retries at the measured airtime sum (230); 39 service
     # windows (the joining cycle of the ceil(D_g/T) = 40 carries no credit).
-    return ceil((w + n_r * 241) / 39), n_r
+    return ceil((w + n_r * 230) / 39), n_r
 
 
 def run_sim(q: int, cap: int, per_ppm: int) -> list[dict]:

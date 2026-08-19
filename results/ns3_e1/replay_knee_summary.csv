@@ -1,0 +1,7 @@
+csv,per_slac,criterion,knee_K1,knee_K4,knee_K8,knee_K16
+replay_knee_occupancy.csv,0.0,max,19,17,16,12
+replay_knee_occupancy.csv,0.0,median,19,19,16,13
+replay_knee_per1e3.csv,0.001,max,19,17,15,12
+replay_knee_per1e3.csv,0.001,median,19,19,16,13
+replay_knee_per1e2.csv,0.01,max,19,17,15,12
+replay_knee_per1e2.csv,0.01,median,19,19,16,13

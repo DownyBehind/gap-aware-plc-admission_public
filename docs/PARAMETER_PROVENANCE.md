@@ -159,7 +159,7 @@ one-to-one derivation from each timer bound is not claimed.
 | B_blk | 21 slots | derived | max(C_req, C_res, max ℓ_i) = max(15, 21, 18) | equality with C_res is not a coincidence: the max is attained at C_res |
 | B_pkt | 21 slots | derived | same (medium-wide guard) | trajectory analysis uses the SLAC-only B_str = 17 |
 
-B_pkt note: B_pkt is applied to the authentication window only
+B_pkt note: B_pkt is applied to the SLAC setup window only
 (charged when K > 0); its value is the medium-wide non-preemptive
 frame bound (21 slots), not the tight SLAC straddling bound. Lemma 1
 uses the tighter B_str = 17 because only SLAC frames straddle an
@@ -172,7 +172,7 @@ value, B_str is tight in scope.
 |---|---|---|---|
 | q | 7 | derived | ⌈C_slac / 39⌉ = ⌈247/39⌉ |
 | 39 (service windows) | — | derived | ⌈D_g/T⌉ − 1 = 40 − 1 (the joining cycle carries no credit) |
-| ε | 10⁻⁶ | design target | stated target session-failure probability |
+| ε | 10⁻⁶ | design target | target retry-cap-exceedance probability under the independent-attempt union-bound model |
 | n_r (retry cap) | 2 / 3 | derived | least integer with 19·p^(n_r+1) ≤ ε at p = 10⁻³ / 10⁻² |
 | C_wc | 707 / 937 | derived | C_slac + n_r · Σℓ_i |
 | q_wc | 19 / 25 | derived | ⌈C_wc / 39⌉ |

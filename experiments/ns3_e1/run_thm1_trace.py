@@ -26,8 +26,10 @@ OUT_DIR = ROOT / "results" / "ns3_e1"
 MAIN_TRACE = OUT_DIR / "thm1_cell_trace.csv"
 ARGS = ["--cellCsv=1", "--aggCap=1"]  # q=25, cap=3, maxOffset=40 are defaults
 CELLS = [  # (n0, sessions, committed file, expected in-cell straddle max)
-    (35, 3, OUT_DIR / "thm1_cell_trace_n35k3.csv", 7),
-    (34, 4, OUT_DIR / "thm1_cell_trace_n34k4.csv", 10),
+    # On the corrected 19-message sequence no in-cell straddle overrun
+    # occurs (superseded 20-message values were 7 and 10).
+    (35, 3, OUT_DIR / "thm1_cell_trace_n35k3.csv", 0),
+    (34, 4, OUT_DIR / "thm1_cell_trace_n34k4.csv", 0),
 ]
 
 
@@ -68,8 +70,9 @@ def main() -> None:
         sweep_max = max(sweep_max, straddle_max(out))
         path.write_text(out)
         print(f"({n0},{sessions}) straddle max {got}: {path}")
-    assert sweep_max == 10, f"sweep-wide straddle max {sweep_max} != 10"
-    print("sweep-wide straddle max 10 (< B_str = 17)")
+    assert sweep_max == 0, f"sweep-wide straddle max {sweep_max} != 0"
+    print("sweep-wide straddle max 0 on the corrected 19-message "
+          "sequence (superseded 20-message value: 10; bound B_str = 17)")
 
 
 if __name__ == "__main__":

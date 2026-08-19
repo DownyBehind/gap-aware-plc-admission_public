@@ -1,12 +1,11 @@
-// NOTE: this tier retains the superseded 20-message / 241-slot SLAC
-// sequence. See docs/model/slac_sequence_model.md.
 // Stage 5c-ii loss-physics simulator (standalone; promotion into the module
 // happens with track B). Replays multi-cycle SLAC message sequences under a
 // credit window with debt carry (postponement rule) and optional frame errors.
 //
-// Message table: the full 20-message SLAC sequence (releases 0..775 ms),
-// summing to 241 slots; the analysis uses the conservative per-session
-// envelope C_slac = 247 >= 241 (see docs/model/slac_sequence_model.md).
+// Message table: the corrected 19-message SLAC sequence (releases
+// 0..775 ms), summing to 230 slots; the analysis uses the conservative
+// per-session envelope C_slac = 247 >= 230 (see
+// docs/model/slac_sequence_model.md).
 //
 // Usage: loss_sim <mode> <per_slac_ppm> <per_dc_ppm> <seeds> <cycles>
 //   mode 0 (ii-0):  deterministic message-replay parity columns
@@ -32,8 +31,8 @@ struct Msg
     uint32_t releaseMs;
 };
 
-// The 20-message SLAC sequence, kept as printed in an early
-// draft's table (not Table I of the paper).
+// The corrected 19-message SLAC sequence (ISO 15118-3 Annex A;
+// not Table I of the paper).
 std::vector<Msg>
 PaperSequence()
 {
@@ -44,7 +43,6 @@ PaperSequence()
     {
         seq.push_back({11, 35 + 20 * i}); // START_ATTEN_CHAR.IND x3 (35..75)
     }
-    seq.push_back({11, 95});   // START_ATTEN_CHAR.RSP
     for (uint32_t i = 0; i < 10; ++i)
     {
         seq.push_back({12, 105 + 40 * i}); // MNBC_SOUND.IND x10 (105..465)

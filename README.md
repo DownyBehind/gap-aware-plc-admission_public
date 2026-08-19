@@ -1,6 +1,6 @@
 # gap-aware-plc-admission_public
 
-> Submission snapshot for ICIT 2027 — tag `icit27-submission-v3`.
+> Submission snapshot for ICIT 2027 — tag `icit27-submission-v4`.
 > This is the artifact repository cited by the paper's Sec. V footnote.
 
 Artifact for the ICIT 2027 submission.
@@ -19,7 +19,7 @@ Start here:
 
 Simulation and evidence package for gap-aware admission control of EV
 charging communication on a shared HPGP power-line channel: SLAC
-authentication completion creates future periodic DC load, so admission
+setup completion creates future periodic DC load, so admission
 must check both the current state and the post-transition future state.
 
 Paper: *Deterministic Multi-EV Charging over Shared PLC: Gap-Aware
@@ -96,6 +96,7 @@ supplementary figure of the Table I knee data (not shipped in the paper).
 | Table II (bursty vs i.i.d. by residual room) | `results/ns3_e1/g3_burst_vs_iid.csv`, `results/ns3_e1/g3i_iid_baseline.csv` | `experiments/ns3_e1/run_g3_burst_vs_iid.py` | — |
 | Sec. V-C loss outcomes | `results/ns3_e1/e2_admission_variants.csv` | `experiments/ns3_e1/run_e2.py` | variants `A_loss_blind` (q=7), `C_q_wc` (q_wc caps) |
 | Theorem 2 (loss-free cohort completion; provisioning stress check) | `results/theorem2_completion.csv`, `results/theorem2_adversarial.csv`, `results/theorem2_staggered.csv` | `experiments/analysis/run_theorem2_adjudication.py`, `experiments/analysis/staggered_search.py` | — |
+| Sec. V-A realized (replay) knees | `results/ns3_e1/replay_knee_occupancy.csv`, `replay_knee_per1e3.csv`, `replay_knee_per1e2.csv`, `replay_knee_summary.csv` | `experiments/ns3_e1/run_replay_knee.py` | — |
 
 Numeric claims and their producing runs are indexed in
 `results/RESULTS.md`.

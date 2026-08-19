@@ -11,25 +11,26 @@ script/configuration that produces it. All runs are deterministic
 | 1 | Layer-1 knee positions (Table I, IFS=0 row) | {18, 17, 15, 11} for K ∈ {1, 4, 8, 16}, zero tolerance | `results/layer1/knee_verification.csv` | `experiments/layer1/verify_knee_e1.py` | N = 1..40 |
 | 2 | Contention baseline DC deadline miss at (N₀=30, K=0) | 93.08% (67,018 / 72,000) | `results/ns3_e1/e4_csma_single_cell_30_0.csv` | `trackc-e4-csma --singleN0=30 --singleK=0 --perPpm=1000 --seeds=20 --horizon=120` | 20 seeds, 30 EVs × 120 cycles |
 | 3 | Burst effect on DC miss (Table II; unified accounting, slack-resolved) | boundary (37,1): i.i.d. 814/10,000 = 8.14e-2, G-E worst 779/10,000 = 7.79e-2 (ratio 0.96); maximum defined ratio 81.5× at (36,1), sojourn 300, per_bad 0.05 (163/10,000 vs 2/10,000); some cells have i.i.d. 0 but burst > 0 | `results/ns3_e1/g3_burst_vs_iid.csv`, `results/ns3_e1/g3i_iid_baseline.csv`, `results/ns3_e1/g3c_burst_sensitivity.csv` | `experiments/ns3_e1/run_g3_burst_vs_iid.py` (`trackc-g3 --mode=i/c --cells=…`) | 13 cells over the envelope-slack spectrum × 12 G-E points, marginal slot-PER 6.7e-5 held, 20 seeds |
-| 4 | Link-aware admission cuts SEVERE-link deadline violations | 7.1× (50 → 7 of 160) | `results/ns3_e1/g3b_link_aware.csv` | `experiments/ns3_e1/run_trackc_c4.py` | N₀=10, K=16, half GOOD / half SEVERE, SEVERE PER 1e-2, 20 seeds |
-| 5 | SEVERE-link session violation share under count-based admission | 31.25% (50 / 160) | `results/ns3_e1/g3b_link_aware.csv` | same as #4 | same as #4 |
+| 4 | Per-link service credit cuts SEVERE-link deadline violations | uniform credit 139/800 = 17.375% (CP95 [14.81%, 20.18%]) vs. per-link credit 7/800 = 0.875% (CP95 [0.35%, 1.79%]); Fisher exact p = 1.5e-35; per-seed median 0 across 100 seeds (per-link arm); seed-level bootstrap95 uniform [15.25%, 19.63%], per-link [0.25%, 1.63%]; GOOD-link violations 0/800 in both arms | `results/ns3_e1/perlink_uniform_per_seed.csv`, `perlink_perlink_per_seed.csv`, `perlink_summary.csv` (20-seed subset: `g3b_link_aware.csv`) | `trackc-g3 --mode=b --seeds=100 --aggCap=1` (`run_trackc_c4.py` runs the 20-seed subset) | N₀=10, K=16, half GOOD / half SEVERE, SEVERE PER 1e-2; **100 seeds for the per-link comparison; 20 seeds elsewhere** |
+| 5 | SEVERE-link session violation share under count-based admission | 17.375% (139 / 800) | `results/ns3_e1/perlink_uniform_per_seed.csv` | same as #4 | same as #4 |
 | 6 | Tightest admitted state finish | 1389 / 1395 slots (slack 6) at (38, 0) | `results/ns3_e1/e5_adversarial.csv`, `results/layer1/admission_region.csv` | `experiments/ns3_e1/run_e4e5.py` (e5), `experiments/layer1/sweep_admission_region.py` | adversarial carry-in realization |
 | 7 | Naive-bound counterexample finish | 1402 slots at (37, 4) — analytic value, not a measurement | formula | `src/formulas/transition_formulas.py` (`F_active_state`) | max(555+28+21, 295) + 777 + 21 |
 | 8 | Admitted-region size | 588 admitted = 295 hidden + 293 paid | `results/layer1/admission_region.csv` | `experiments/layer1/sweep_admission_region.py` | 966-cell grid |
-| 9 | Loss outcomes (§V-C) | design points (q_wc=19/cap 2 at p=1e-3, 25/cap 3 at p=1e-2): 0/1440 violations; loss-blind q=7: 3/1440 at p=1e-2, 28/86/280 at p=0.03/0.05/0.1 | `results/ns3_e1/e2_admission_variants.csv` | `experiments/ns3_e1/run_e2.py` | 20 seeds, 1440 admitted sessions per row |
-| 10 | Packet-aware bound decomposition at (37,1), q_wc=25 | 555 + (25 + 17) + 777 + B_blk = 1395 = T (equality); at (37,1) the realized maximum is 1386 envelope-inclusive (channel 1365); the trajectory maximum 1389 (channel 1368) occurs at the terminal state (38,0); measured straddle overrun ≤ 17 = max message 18 − 1 | `results/ns3_e1/loss_knee.csv` (`overrun_max` column) | `experiments/ns3_e1/run_loss.py`; trajectory adjudication: `ns3/contrib/ev-plc-transition/examples/trackc-thm1.cc` | q ∈ {19, 25}, offset sweep 0..40, PER=0 |
+| 9 | Loss outcomes (§V-C) | design points (q_wc=19/cap 2 at p=1e-3, 25/cap 3 at p=1e-2): 0/1440 violations; loss-blind q=7: 0/1440 at p=1e-2, 2/26/149 at p=0.03/0.05/0.1 | `results/ns3_e1/e2_admission_variants.csv` | `experiments/ns3_e1/run_e2.py` | 20 seeds, 1440 admitted sessions per row |
+| 10 | Packet-aware bound decomposition at (37,1), q_wc=25 | 555 + (25 + 17) + 777 + B_blk = 1395 = T (equality); at (37,1) the realized maximum is 1386 envelope-inclusive (channel 1365); the trajectory maximum 1389 (channel 1368) occurs at the terminal state (38,0); measured straddle overrun ≤ 17 = max message 18 − 1 in the q=7 replay accounting (`loss_knee.csv` `overrun_max`); in the q_wc=25 trajectory accounting no aggregate-window overrun occurs on the corrected sequence (`thm1_cell_trace*.csv`, max 0; superseded 20-message value: 10) | `results/ns3_e1/loss_knee.csv` (`overrun_max` column) | `experiments/ns3_e1/run_loss.py`; trajectory adjudication: `ns3/contrib/ev-plc-transition/examples/trackc-thm1.cc` | q ∈ {19, 25}, offset sweep 0..40, PER=0 |
 | 11 | Effective-parameter knee shifts under IFS (Table I, IFS 1–3 rows) | {17,16,14,11}, {16,15,13,10}, {15,14,12,9} | `results/ns3_e1/overhead_knee.csv` | `experiments/ns3_e1/run_overhead.py` | IFS ∈ {1,2,3}, 600 cells, zero error |
-| 12 | Loss-completion ratio | 1/(1−p) to four digits (1.001, 1.0101) | `results/ns3_e1/loss_knee.csv` | `experiments/ns3_e1/run_loss.py` | p ∈ {1e-3, 1e-2} |
-| 13 | Contention baseline with authenticating arrivals | 96.7% DC miss at (30,1), saturating to 0.989 at (30,35) | `results/ns3_e1/e4_policy_comparison_event.csv` | `experiments/ns3_e1/run_trackc_c4.py` | `hpgp_csma_ca` rows, 20 seeds |
+| 12 | Loss-completion ratio | 1/(1−p) to four digits (1.0010, 1.0100) | `results/ns3_e1/loss_knee.csv` | `experiments/ns3_e1/run_loss.py` | p ∈ {1e-3, 1e-2} |
+| 13 | Contention baseline with authenticating arrivals | 96.5% DC miss at (30,1), saturating to 0.990 at (30,35) | `results/ns3_e1/e4_policy_comparison_event.csv` | `experiments/ns3_e1/run_trackc_c4.py` | `hpgp_csma_ca` rows, 20 seeds |
 | 14 | None of the three evaluated fixed-reservation fractions protects both deadlines across the tested grid | 10%: 100% session-deadline violations at K=35; 25/50%: DC miss 0.82–1.00 at high load | `results/ns3_e1/e4_policy_comparison_event.csv` | `experiments/ns3_e1/run_trackc_c4.py` | `fixed_10pct/25pct/50pct` rows |
-| 15 | Cond-B ablation (Cond A only) | DC population reaches 40 at N₀=30 (47 at (15,35)); F_DC(40) = 1461 > 1395; ≈94% DC miss (95,750 / 101,920, as reported in the paper) at (15,35) with zero D_g violations | `results/ns3_e1/e4_ablation_condA_only.csv` | `trackc-e4-scheduled --condB=0` (same invocation as `run_trackc_c4.py`, Cond B flag off) | same grid/seeds/RNG as the policy comparison |
+| 15 | Cond-B ablation (Cond A only) | DC population reaches 40 at N₀=30 (47 at (15,35)); F_DC(40) = 1461 > 1395; ≈94% DC miss (95,749 / 101,920) at (15,35) with zero D_g violations | `results/ns3_e1/e4_ablation_condA_only.csv` | `trackc-e4-scheduled --condB=0` (same invocation as `run_trackc_c4.py`, Cond B flag off) | same grid/seeds/RNG as the policy comparison |
 | 16 | Admission cost at (30,35) | 8/35 candidates per seed admitted (160/700), all at the first boundary (wait 0); mean admit wait 92.6 cycles is horizon-censored (27/35 right-censored at the 120-cycle horizon) | `results/ns3_e1/e4_policy_counts.csv`, `results/ns3_e1/e4_policy_comparison_event.csv` (`admit_wait_cycles`) | `experiments/ns3_e1/run_trackc_c4.py` | `acbs_qwc25`, 20 seeds |
 | 17 | Provisioned credit under bursts | 0 / 1,920 admitted sessions violate D_g for bad-state sojourns {3, 15, 60, 300} slots | `results/ns3_e1/g3a_qwc_burst.csv` | `experiments/ns3_e1/run_trackc_c4.py` (`trackc-g3`, q_wc=25 cap 3) | 20 seeds × 4 sojourns × 3 per_bad |
-| 18 | Link-aware experiment DC misses | 0 / 102,802 DC EV-cycles (both variants combined) | `results/ns3_e1/g3b_link_aware.csv` | same as #4 | same as #4 |
-| 19 | Design corrections (honest findings) | round-robin window sharing starves late sessions at p=0 (design note in `ns3/standalone/e2_sim.cc`); a stale map kept across a membership change collides in 12 of 18 `stale_persist` alignments; backlog-free slot approximation optimistic in overload by up to +75 pp (fixed, (30,10)) / +11.1 pp (CSMA, (30,1)) | `results/ns3_e1/e3_adversarial.csv`, `results/ns3_e1/c3_csma_comparison.csv`, `results/ns3_e1/e4_policy_comparison.csv` vs `e4_policy_comparison_event.csv` | `experiments/ns3_e1/run_e3.py`, `run_trackc_c3.py`, `run_e4e5.py` + `run_trackc_c4.py` | Fig. 4 reports the corrected (event-driven) numbers |
-| 20 | Loss-free cohort completion (Theorem 2 adjudication) | exhaustive K = 1..38 simultaneous cohorts, q = 7: per-session max elapsed 38 cycles ≤ D_g = 40 (2-cycle margin) on the paper's 39-window timeline, first attained at K = 21 (full argmax set {21, 22, 25, 26, 27, 28, 29, 31, 32, 33, 34, 35, 36, 38}); 37 cycles on the engine timeline; 0 violations — deterministic loss-free dynamics make the sweep a complete case analysis | `results/theorem2_completion.csv` | `experiments/analysis/run_theorem2_adjudication.py` (discipline port: `theorem2_adjudication.py`; on the ns-3 cross-check see the divergence note below the findings) | q = 7, cap 0, all admitted at cycle 0 |
+| 18 | Link-aware experiment DC misses | 0 / 103,883 DC EV-cycles (both variants combined, 20-seed run); 0 DC misses in both 100-seed arms | `results/ns3_e1/g3b_link_aware.csv` | same as #4 | same as #4 |
+| 19 | Design corrections (honest findings) | round-robin window sharing starves late sessions at p=0 (design note in `ns3/standalone/e2_sim.cc`); a stale map kept across a membership change collides in 12 of 18 `stale_persist` alignments; backlog-free slot approximation optimistic in overload by up to +75 pp (fixed, (30,10)) / +11.0 pp (CSMA, (30,1)) | `results/ns3_e1/e3_adversarial.csv`, `results/ns3_e1/c3_csma_comparison.csv`, `results/ns3_e1/e4_policy_comparison.csv` vs `e4_policy_comparison_event.csv` | `experiments/ns3_e1/run_e3.py`, `run_trackc_c3.py`, `run_e4e5.py` + `run_trackc_c4.py` | Fig. 4 reports the corrected (event-driven) numbers |
+| 20 | Loss-free cohort completion (Theorem 2 adjudication) | exhaustive K = 1..38 simultaneous cohorts, q = 7: per-session max elapsed 38 cycles ≤ D_g = 40 (2-cycle margin) on the paper's 39-window timeline, first attained at K = 21 (full argmax set {21, 22, 25, 26, 27, 28, 29, 31, 32, 33, 34, 35, 36, 38}); 37 cycles on the engine timeline; 0 violations — deterministic loss-free dynamics make the sweep a complete case analysis | `results/theorem2_completion.csv` | `experiments/analysis/run_theorem2_adjudication.py` (discipline port: `theorem2_adjudication.py`; cross-checked against `e2_sim` capMode 2: completion indices 31/33/34/34 at K = 1/4/8/16) | q = 7, cap 0, all admitted at cycle 0 |
 | 21 | Loss-aware credits are provisioning values, not a worst-case completion guarantee | on the corrected 19-message sequence the former counterexamples dissolve: staggered lossless admission (1/cycle, K = 15) completes at 36 (39-window timeline) / 35 (engine) cycles, formerly 42 / 41 > D_g on the superseded 20-message sequence; the q_wc = 19/cap 2 within-cap cohort pattern (one session cap-maxed, demand 690 ≤ C_wc = 707) completes at 40 cycles = D_g exactly (39-window; 39 engine) — no violation; q_wc = 25/cap 3: no violation in the cohort-scoped search (994 configurations per (q, cap) × timeline sweep), maxima 38 (39-window) / 37 (engine) — a search result, not a proof | `results/theorem2_adversarial.csv`, `results/theorem2_counterexample_traces.txt` | `experiments/analysis/run_theorem2_adjudication.py` | fixed failure families + `random.Random(7)` sweep (40 patterns/K, K ∈ {1..16, 20, 24, 30, 35}) |
 | 22 | Staggered admission: pre-declared exhaustive search finds no D_g violation | K = 2..38 × period p ∈ {1, 2, 3, 5} × (q, cap) ∈ {(7, 0), (19, 2), (25, 3)} × both timelines = 6,184 deterministic configurations, horizon 400 cycles: violations 0; maxima on the 39-window timeline 40 cycles (q_wc = 19, = D_g, no violation), 39 (q_wc = 25), 38 (loss-free q = 7, at K = 29, p = 1); one cycle less on the engine timeline | `results/theorem2_staggered.csv` | `experiments/analysis/staggered_search.py` | fixed failure families, no RNG, within-cap filter C_wc ∈ {247, 707, 937} |
+| 23 | Realized (replay) knee sets (Sec. V-A) | on the corrected 19-message sequence, max criterion {19, 17, 15, 12} for K ∈ {1, 4, 8, 16} at SLAC PER 1e-3 and 1e-2 ({19, 17, 16, 12} at PER = 0); median criterion {19, 19, 16, 13} at all three PERs — knee(K) = min{N : occ > G'(N)}, G'(N) = max(0, 280 − 15(N−1)) | `results/ns3_e1/replay_knee_occupancy.csv`, `replay_knee_per1e3.csv`, `replay_knee_per1e2.csv`, `replay_knee_summary.csv` | `experiments/ns3_e1/run_replay_knee.py` (loss_sim mode 2) | N = 1..40 × K ∈ {0, 1, 4, 8, 16}; PER = 0 (1 seed × 1000 cycles), 1e-3 / 1e-2 (20 seeds × 1000 cycles) |
 
 ## Release-aware credit requirement (`release_aware_credit.csv`)
 
@@ -93,19 +94,21 @@ Findings (`experiments/analysis/run_theorem2_adjudication.py`):
    at 40 cycles = D_g exactly — the bound is reached but not
    exceeded; at q_wc = 25/cap 3 the cohort-scoped search
    finds no violation (maxima 38 / 37) — a search result, not a proof.
+Across the adjudication case families (simultaneous cohorts, the
+deterministic constructions, the adversarial sweeps, and the
+pre-declared staggered search) 10,240 configurations were adjudicated
+and none completes past D_g.
+
 4. All committed experiment observations are unaffected: the evaluated
    workloads admit sessions in simultaneous bursts, and their recorded
    zero-violation counts (claims #9, #17) remain exact observations.
 
-Divergence note (ns-3 tiers): the ns-3 tiers
-(`ns3/standalone/loss_sim.cc`, `ns3/contrib/ev-plc-transition`) retain
-the superseded 20-message / 241-slot sequence. They are not on the
-Theorem 2 adjudication path, which is served entirely by the Python
-discipline port. The slot-exact cross-check between the port and
-`e2_sim` capMode 2 (completion indices 32/34/36/37 at K = 1/4/8/16,
-q = 7, PER = 0) was established on the 20-message sequence and does not
-hold across the corrected port (19-message indices: 31/33/34/34).
-Re-running the ns-3 tiers on the corrected sequence is deferred.
+Cross-check note (ns-3 tiers): the ns-3 tiers now play the corrected
+19-message / 230-slot sequence, and the slot-exact cross-check between
+the Python discipline port and `e2_sim` capMode 2 is restored on the
+corrected sequence: completion indices 31/33/34/34 at K = 1/4/8/16
+(q = 7, PER = 0). Three-tier slot-exact agreement holds on the
+corrected profile.
 
 The committed e2 CSVs carry no completion-cycle column and the engine's
 violation counter tests only elapsed ≥ 40 cycles, so sub-deadline
@@ -139,10 +142,10 @@ parameters — recorded as an analytic result
 
 From the committed per-seed instrumentation
 (`ns3_e1/e4_slack_occupancy.csv`; aggregates verified identical to
-`e4_policy_counts.csv`): worst cell (30,20) = 8/88,479 with per-seed
+`e4_policy_counts.csv`): worst cell (30,20) = 9/88,480 = 1.02e-4 with per-seed
 median 0 (15/20 seeds miss-free), range 0..9.0e-4, seed-level bootstrap
-95% interval [2.3e-5, 1.9e-4]; runner-up (15,35) = 7/83,380, median 0
-(14/20 miss-free), range 0..4.8e-4, bootstrap [2.4e-5, 1.4e-4]
+95% interval [2.3e-5, 2.1e-4]; runner-up (15,35) = 6/83,380, median 0
+(14/20 miss-free), range 0..2.4e-4, bootstrap [2.4e-5, 1.2e-4]
 (`experiments/analysis/seed_level_ci.py`, 10,000 resamples, fixed RNG).
 
 ## Burst-vs-i.i.d. contrast table (`ns3_e1/g3_burst_vs_iid.csv`)

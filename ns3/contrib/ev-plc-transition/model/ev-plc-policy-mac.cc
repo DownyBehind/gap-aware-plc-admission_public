@@ -30,7 +30,6 @@ PaperSequence()
         {
             s.push_back({11, 35 + 20 * i});
         }
-        s.push_back({11, 95});
         for (uint32_t i = 0; i < 10; ++i)
         {
             s.push_back({12, 105 + 40 * i});

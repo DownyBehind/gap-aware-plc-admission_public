@@ -1,0 +1,3 @@
+arm,severe_violations,severe_sessions,rate,cp95_lo,cp95_hi,bootstrap95_lo,bootstrap95_hi,good_violations,good_sessions,dc_misses,never_admitted,median_per_seed,fisher_p_vs_uniform
+uniform_q7,139,800,0.173750,0.148110,0.201819,0.152500,0.196250,0,800,0,0,1,
+per_link_credit,7,800,0.008750,0.003525,0.017945,0.002500,0.016250,0,800,0,0,0,1.48e-35

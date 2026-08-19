@@ -33,22 +33,19 @@ credits: replacing the budget by the bare sum 230 would give
 `q = ceil(230/39) = 6` and `q_wc = 18 / 24` instead of the published
 7 / 19 / 25 (see docs/PARAMETER_PROVENANCE.md).
 
-## Message-replay source (`loss_sim`) — divergence note
+## Message-replay source (`loss_sim`)
 
 The ns-3 tiers (`ns3/standalone/loss_sim.cc`,
-`ns3/contrib/ev-plc-transition`) **retain the superseded 20-message /
-241-slot sequence.** They are not on the Theorem 2 adjudication path,
-which is served entirely by the Python discipline port. The slot-exact
-cross-check between the port and `e2_sim` capMode 2 (completion
-indices 32/34/36/37 at K = 1/4/8/16) was established on the 20-message
-sequence and does not hold across the corrected port (19-message
-indices: 31/33/34/34). Re-running the ns-3 tiers on the corrected
-sequence is deferred. Additional notes:
+`ns3/contrib/ev-plc-transition`) play the **corrected 19-message /
+230-slot sequence** — the same canonical table as the Python analysis
+path. The slot-exact cross-check between the Python discipline port
+and `e2_sim` capMode 2 holds on the corrected sequence (completion
+indices 31/33/34/34 at K = 1/4/8/16, q = 7, PER = 0); three-tier
+slot-exact agreement holds on the corrected profile. Additional notes:
 
-1. `SlacSequenceModel::DefaultSequence()` (C++) totals 196 slots and
-   lacks release times — it predates the message table; the replay
-   uses the (20-message) table.
-2. The replayed 20-message demand (241 slots) is strictly inside the
-   analyzed `C_slac = 247` envelope, so replay-based observations
-   remain within-envelope; the corrected 19-message demand (230
-   slots) is smaller still.
+1. `SlacSequenceModel::LegacySequence()` (C++) totals 196 slots and
+   lacks release times — it predates the message table and is kept for
+   regression tests only; the replay uses the canonical table.
+2. The replayed demand (230 slots) is strictly inside the analyzed
+   `C_slac = 247` envelope, so replay-based observations remain
+   within-envelope.
